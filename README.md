@@ -28,3 +28,5 @@ CREATE TABLE movies (
 ## Steps to remove all sample data
 - Hit the endpoint `/delete-all-movies`.
 - A message confirming that the data has been removed will be displayed on the screen.
+
+BRANCH PR TEST
