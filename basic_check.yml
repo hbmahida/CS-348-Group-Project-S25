@@ -1,0 +1,13 @@
+name: basic-check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  basic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hello
+        run: echo "This is a basic check that always passes."
