@@ -6,6 +6,7 @@ app = Flask(__name__)
 DB_CONFIG = {
     "dbname": "movies-db",
     "user": "postgres",
+    "password": "your_password_goes_here_if_any",
     "host": "localhost",
     "port": 5432
 }
