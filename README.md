@@ -4,8 +4,8 @@
 - Enter the following command into the VSCode terminal: `pip install -r requirements.txt`.
 - Have PostgreSQL installed on your local machine with default installation settings.
 - Download pgAdmin4 and connect that to the PostgreSQL database.
-- Create a database titled 'airbnb_db'.
-- Click on the Query Tool and create a relation (table) called 'movies' in that database using the following command:
+- Create a database titled `listings_db`.
+- Click on the Query Tool and create a relation (table) called `listings` in that database using the following command:
 ```SQL
 CREATE TABLE listings (
     id                SERIAL        PRIMARY KEY,
