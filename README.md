@@ -22,13 +22,13 @@ CREATE TABLE listings (
 - Enter the following URL in your browser: `http://127.0.0.1:5000`.
 
 ## Steps to add the sample data
-- Hit the endpoint `/add-movies`.
+- Hit the endpoint `/add-reviews`.
 - A message confirming that the data has been added will be displayed on the screen.
 
 ## Steps to get the sample data
-- Hit the endpoint `/get-movies`.
+- Hit the endpoint `/get-reviews`.
 - A message containing all the movies in the relation will be displayed on the screen.
 
 ## Steps to remove all sample data
-- Hit the endpoint `/delete-all-movies`.
+- Hit the endpoint `/delete-all-reviews`.
 - A message confirming that the data has been removed will be displayed on the screen.
