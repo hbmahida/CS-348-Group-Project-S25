@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Listings</h1>
+
+  <!-- Search & Filter Bar -->
+  <div class="search-container">
+    <form method="get" action="{{ url_for('view_listings') }}" style="display: flex; gap:1rem; width:100%;">
+      <input
+        type="text"
+        name="search"
+        class="search-input"
+        placeholder="🔍 Search"
+        value="{{ current_filters.search }}"
+      >
+      <button type="button" class="btn" onclick="openFilterModal()">⚙️ Filter</button>
+      <!-- you can wire up search later -->
+    </form>
+  </div>
+
+  <!-- Filter Modal -->
+  <div class="modal" id="filterModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h3 class="modal-title">Filter Listings</h3>
+          <button class="close-btn" onclick="closeFilterModal()">×</button>
+        </div>
+
+        <!-- Filter Form -->
+        <form method="get" action="{{ url_for('view_listings') }}">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="neighbourhood">Neighbourhood</label>
+              <select id="neighbourhood" name="neighbourhood">
+                <option value="">Any</option>
+                {% for n in neighbourhoods %}
+                  <option value="{{ n }}" {% if n==current_filters.neighbourhood %}selected{% endif %}>{{ n }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="price_min">Price Range</label>
+              <div class="price-range">
+                <input
+                  type="number"
+                  id="price_min"
+                  name="price_min"
+                  placeholder="Min"
+                  value="{{ current_filters.price_min }}"
+                >
+                <span>-</span>
+                <input
+                  type="number"
+                  id="price_max"
+                  name="price_max"
+                  placeholder="Max"
+                  value="{{ current_filters.price_max }}"
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="room_type">Room Type</label>
+              <select id="room_type" name="room_type">
+                <option value="">Any</option>
+                {% for rt in room_types %}
+                  <option value="{{ rt }}" {% if rt==current_filters.room_type %}selected{% endif %}>{{ rt }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="min_nights">Minimum Nights</label>
+              <input
+                type="number"
+                id="min_nights"
+                name="min_nights"
+                min="1"
+                placeholder="e.g. 1"
+                value="{{ current_filters.min_nights }}"
+              >
+            </div>
+          </div>
+
+          <div class="modal-footer" style="justify-content:center;">
+            <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Listings Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Name</th><th>Neighbourhood</th>
+        <th>Room Type</th><th>Price</th><th>Avg Rating</th><th>Reviews</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for listing in listings %}
+      <tr>
+        <td>{{ listing.listing_id }}</td>
+        <td>{{ listing.name }}</td>
+        <td>{{ listing.neighbourhood }}</td>
+        <td>{{ listing.room_type }}</td>
+        <td>${{ listing.price }}</td>
+        <td>{{ listing.avg_rating or 'N/A' }}</td>
+        <td>{{ listing.review_count or 0 }}</td>
+      </tr>
+      {% endfor %}
+      {% if listings|length == 0 %}
+      <tr><td colspan="7" style="text-align:center;">No listings found.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- Modal Show/Hide Script -->
+  <script>
+    function openFilterModal() {
+      document.getElementById('filterModal').classList.add('show');
+    }
+    function closeFilterModal() {
+      document.getElementById('filterModal').classList.remove('show');
+    }
+
+    function clearFilters() {
+      // Reset all form fields
+      document.getElementById('neighbourhood').value = '';
+      document.getElementById('room_type').value = '';
+      document.getElementById('price_min').value = '';
+      document.getElementById('price_max').value = '';
+      document.getElementById('min_nights').value = '';
+
+      // Submit the form to clear filters and show all listings
+      document.getElementById('filterForm').submit();
+    }
+
+    // click outside to close
+    document.getElementById('filterModal').addEventListener('click', function(e) {
+      if (e.target === this) closeFilterModal();
+    });
+    // ESC key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeFilterModal();
+    });
+  </script>
+{% endblock %}
