@@ -9,7 +9,7 @@ def get_db_connection():
     conn = psycopg2.connect(**DB_CONFIG)
     return conn
 
-# Initialize database schema from data.sql
+# Initializes the database schema from data.sql.
 def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -22,10 +22,12 @@ def init_db():
     cur.close()
     conn.close()
 
+# Route for homepage.
 @app.route('/')
 def home():
     return render_template('home.html')
 
+# Route to add sample data to the listings database.
 @app.route('/add-sample')
 def add_sample():
     conn = get_db_connection()
@@ -51,23 +53,28 @@ def add_sample():
             message = "Sample data has already been added."
         else:
             message = f"Error inserting sample data: {e.pgerror}"
+            
     finally:
         cur.close()
         conn.close()
 
     return render_template('add_sample.html', message=message)
 
+# Route for viewing the listings filtered by 
 @app.route('/view-listings')
 def view_listings():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # 1. Read filter params
+    # 1. Read all params
+    search = request.args.get('search', type=str)
     neighbourhood = request.args.get('neighbourhood', type=str)
     room_type     = request.args.get('room_type',    type=str)
     price_min     = request.args.get('price_min',    type=float)
     price_max     = request.args.get('price_max',    type=float)
     min_nights    = request.args.get('min_nights',   type=int)
+    sort_by     = request.args.get('sort_by',      type=str)  # 'price' | 'name' | ''
+    sort_order  = request.args.get('sort_order',   type=str)
 
     # 2. Build base query (join on Neighbourhood.listing_id)
     base_query = """
@@ -85,10 +92,22 @@ def view_listings():
     LEFT JOIN Review r
       ON r.listing_id = l.listing_id
     """
+
+    group_by = """
+      GROUP BY
+        l.listing_id, l.name, l.price, l.room_type, n.name
+    """
+
     where_clauses = []
     params = []
 
-    # 3. Apply filters only if provided
+    # 3a. Search listing name and neighbourhood based on pattern entered by user.
+    if search:
+        wildcard = f"%{search}%"
+        where_clauses.append("(l.name ILIKE %s OR n.name ILIKE %s)")
+        params.extend([wildcard, wildcard])
+
+    # 3b. Apply filters (if provided)
     if neighbourhood:
         where_clauses.append("n.name = %s")
         params.append(neighbourhood)
@@ -105,17 +124,24 @@ def view_listings():
         where_clauses.append("l.minimum_nights >= %s")
         params.append(min_nights)
 
+    # 4. Stitching the query together.
     if where_clauses:
         base_query += " WHERE " + " AND ".join(where_clauses)
+    base_query += group_by
 
-    # 4. Finalize with grouping & ordering
-    base_query += """
-      GROUP BY
-        l.listing_id, l.name, l.price, l.room_type, n.name
-      ORDER BY
-        avg_rating DESC NULLS LAST,
-        l.price ASC;
-    """
+    if sort_by == 'price':
+        direction = 'ASC' if sort_order == 'asc' else 'DESC'
+        base_query += f"\n  ORDER BY l.price {direction}"
+    elif sort_by == 'name':
+        direction = 'ASC' if sort_order == 'asc' else 'DESC'
+        base_query += f"\n  ORDER BY l.name {direction}"
+    else:
+       # default ordering
+        base_query += """
+        ORDER BY avg_rating DESC NULLS LAST,
+        l.price ASC
+        """
+    base_query += ";" # End of query
 
     # 5. Execute and fetch
     cur.execute(base_query, params)
@@ -154,10 +180,13 @@ def view_listings():
         'room_type':     room_type     or '',
         'price_min':     price_min     or '',
         'price_max':     price_max     or '',
-        'min_nights':    min_nights    or ''
+        'min_nights':    min_nights    or '',
+        'sort_by':       sort_by       or '',
+        'sort_order':    sort_order    or ''
       }
     )
 
+# Route to remove the loaded sample data from the database.
 @app.route('/delete-all')
 def delete_all():
     conn = get_db_connection()

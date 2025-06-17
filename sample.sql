@@ -16,7 +16,8 @@ INSERT INTO Listing (listing_id, host_id, name, description, neighborhood_overvi
 (106, 3, 'Tech Hub Apartment', 'Modern apartment in SOMA with high-speed internet and workspace.', 'Heart of San Francisco tech scene with startup culture.', 'Entire home/apt', 2, 1.0, '1 bathroom', 1, 1, 220.00, 1, 28, TRUE, '2021-04-05', '2025-06-05'),
 (107, 4, 'South Beach Penthouse', 'Luxury penthouse with ocean views and rooftop access.', 'Art Deco district with nightlife, dining, and beach access.', 'Entire home/apt', 8, 4.0, '4 full bathrooms', 4, 6, 500.00, 5, 120, FALSE, '2018-12-10', '2025-06-04'),
 (108, 4, 'Coral Gables Villa', 'Mediterranean-style villa with private garden and pool.', 'Upscale Coral Gables with historic architecture and fine dining.', 'Entire home/apt', 5, 2.5, '2.5 baths', 3, 3, 280.00, 3, 75, FALSE, '2019-01-20', '2025-06-03'),
-(109, 5, 'Music District Loft', 'Industrial loft in the heart of Austins live music scene.', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 165.00, 2, 21, TRUE, '2022-09-01', '2025-06-02');
+(109, 5, 'Music District Loft', 'Industrial loft in the heart of Austins live music scene.', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 165.00, 2, 21, TRUE, '2022-09-01', '2025-06-02'),
+(110, 5, 'Goldrej Loft', 'Something somethihng', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 240.00, 2, 21, TRUE, '2022-09-01', '2025-06-02');
 
 -- NEIGHBOURHOOD table (9 records - one for each listing)
 INSERT INTO Neighbourhood (neighbourhood_id, listing_id, name, neighbourhood_group, latitude, longitude) VALUES
@@ -28,7 +29,8 @@ INSERT INTO Neighbourhood (neighbourhood_id, listing_id, name, neighbourhood_gro
 (6, 106, 'SOMA', 'San Francisco', 37.7749, -122.4094),
 (7, 107, 'South Beach', 'Miami Beach', 25.7907, -80.1300),
 (8, 108, 'Coral Gables', 'Miami-Dade', 25.7454, -80.2534),
-(9, 109, 'East Austin', 'Austin', 30.2672, -97.7431);
+(9, 109, 'East Austin', 'Austin', 30.2672, -97.7431),
+(10, 110, 'East Austin', 'Austin', 30.2672, -97.7431);
 
 -- LISTING_AMENITY table (covering various amenities across listings)
 INSERT INTO ListingAmenity (listing_id, amenity) VALUES
@@ -101,18 +103,18 @@ INSERT INTO Review (listing_id, review_date, rating, accuracy, location, number_
 
 -- AVAILABILITY table (15 records showing different availability patterns)
 INSERT INTO Availability (listing_id, date, availability_30, availability_365) VALUES
-(101, '2025-06-15', 25, 300),
+(101, '2025-06-29', 25, 300),
 (101, '2025-07-01', 20, 280),
 (102, '2025-06-20', 30, 365),
-(103, '2025-06-12', 15, 200),
+(103, '2025-06-19', 15, 200),
 (103, '2025-08-01', 28, 320),
 (104, '2025-06-25', 10, 150),
-(105, '2025-06-18', 22, 250),
+(105, '2025-06-21', 22, 250),
 (105, '2025-07-15', 18, 240),
-(106, '2025-06-14', 29, 350),
-(107, '2025-06-30', 5, 120),
+(106, '2025-07-14', 29, 350),
+(107, '2025-07-30', 5, 120),
 (107, '2025-07-20', 8, 100),
-(108, '2025-06-16', 27, 290),
-(109, '2025-06-22', 21, 260),
+(108, '2025-10-16', 27, 290),
+(109, '2025-10-22', 21, 260),
 (109, '2025-07-10', 19, 230),
 (109, '2025-08-05', 24, 275);
