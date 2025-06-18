@@ -1,9 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, flash, redirect, render_template, request, url_for
 import psycopg2
 from psycopg2 import errors, IntegrityError
 from db_config import DB_CONFIG
+from datetime import date
+import os
 
 app = Flask(__name__)
+
+# Secret key for session/flash support (set this to a secure random value)
+app.secret_key = os.urandom(24)
 
 def get_db_connection():
     conn = psycopg2.connect(**DB_CONFIG)
@@ -185,6 +190,117 @@ def view_listings():
         'sort_order':    sort_order    or ''
       }
     )
+
+# Route to add listings from users (currently an admin user)
+@app.route('/add-listing', methods=['GET', 'POST'])
+def add_listing():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        # 1. read form data
+        listing_id        = request.form.get('listing_id', type=int)
+        host_id           = request.form.get('host_id', type=int)
+        name              = request.form.get('name')
+        description       = request.form.get('description')
+        neighbourhood_overview = request.form.get('neighbourhood_overview')
+        room_type         = request.form.get('room_type')
+        accommodates      = request.form.get('accommodates', type=int)
+        bathrooms         = request.form.get('bathrooms', type=float)
+        bathrooms_text    = request.form.get('bathrooms_text')
+        bedrooms          = request.form.get('bedrooms', type=int)
+        beds              = request.form.get('beds', type=int)
+        price             = request.form.get('price', type=float)
+        minimum_nights    = request.form.get('minimum_nights', type=int)
+        maximum_nights    = request.form.get('maximum_nights', type=int)
+        instant_bookable  = bool(request.form.get('instant_bookable'))
+        created_date      = date.today()
+        last_scraped      = date.today()
+        neighbourhood_id  = 0
+        neighbourhood_name = request.form.get('neighbourhood_name')
+        neighbourhood_group = request.form.get('neighbourhood_group')
+        latitude = request.form.get('latitude', type=float)
+        longitude = request.form.get('longitude', type=float)
+
+        # 2. Check for duplicate listing_id
+        cur.execute('SELECT 1 FROM Listing WHERE listing_id = %s;', (listing_id,))
+        if cur.fetchone():
+            flash(f'Error: Listing ID {listing_id} already exists.', 'error')
+        else:
+            # 3. insert into Listing
+            try:
+                cur.execute(
+                    '''INSERT INTO Listing (
+                         listing_id, host_id, name, description,
+                         neighbourhood_overview, room_type, accommodates,
+                         bathrooms, bathrooms_text, bedrooms, beds,
+                         price, minimum_nights, maximum_nights,
+                         instant_bookable, created_date, last_scraped)
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                               %s, %s, %s, %s, %s, %s, %s)''',
+                    (listing_id, host_id, name, description,
+                     neighbourhood_overview, room_type, accommodates,
+                     bathrooms, bathrooms_text, bedrooms, beds,
+                     price, minimum_nights, maximum_nights,
+                     instant_bookable, created_date, last_scraped)
+                )
+                cur.execute(
+                    'SELECT COALESCE(MAX(neighbourhood_id), 0) + 1 FROM Neighbourhood;'
+                )
+                neighbourhood_id = cur.fetchone()[0]
+                cur.execute(
+                    '''INSERT INTO Neighbourhood (
+                        neighbourhood_id, listing_id, name, neighbourhood_group,
+                        latitude, longitude)
+                    VALUES (%s, %s, %s, %s, %s, %s)''',
+                    (neighbourhood_id, listing_id, neighbourhood_name, neighbourhood_group,
+                    latitude or None, longitude or None)
+                )
+                conn.commit()
+                flash('Listing created successfully!', 'success')
+                conn.close()
+                return redirect(url_for('view_listings'))
+            except IntegrityError as e:
+                import traceback
+                traceback.print_exc()
+                flash(f"Error: {e.pgerror}", 'error')
+                conn.rollback()
+                conn.close()
+                return redirect(url_for('add_listing'))
+
+    # fetch hosts for dropdown
+    cur.execute('SELECT host_id, host_name FROM Host ORDER BY host_name;')
+    hosts = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template('add_listing.html', hosts=hosts)
+
+# Route to delete a particular listing.
+@app.route('/delete-listing', methods=['GET', 'POST'])
+def delete_listing():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        listing_id = request.form.get('listing_id', type=int)
+        
+        # attempt to delete
+        cur.execute('SELECT 1 FROM Listing WHERE listing_id = %s;', (listing_id,))
+        if not cur.fetchone():
+            flash(f'Listing ID {listing_id} not found.', 'error')
+        else:
+            cur.execute('DELETE FROM Listing WHERE listing_id = %s;', (listing_id,))
+            conn.commit()
+            flash(f'Listing ID {listing_id} deleted successfully.', 'success')
+        cur.close()
+        conn.close()
+        return redirect(url_for('delete_listing'))
+
+    # GET: render form
+    cur.close()
+    conn.close()
+    return render_template('delete_listing.html')
 
 # Route to remove the loaded sample data from the database.
 @app.route('/delete-all')

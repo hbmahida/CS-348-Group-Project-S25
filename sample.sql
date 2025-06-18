@@ -7,9 +7,9 @@ INSERT INTO Host (host_id, host_name, host_since, host_location, host_about, hos
 (5, 'Michael Brown', '2022-08-18', 'Austin, TX', 'Music enthusiast with unique properties in the heart of Austin.', 'within a few hours', 89, 84, FALSE, 1);
 
 -- LISTING table (9 unique listings)
-INSERT INTO Listing (listing_id, host_id, name, description, neighborhood_overview, room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds, price, minimum_nights, maximum_nights, instant_bookable, created_date, last_scraped) VALUES
-(101, 1, 'Cozy Manhattan Studio', 'Modern studio apartment in the heart of NYC with amazing city views.', 'Vibrant neighborhood with great restaurants and easy subway access.', 'Entire home/apt', 2, 1.0, '1 bath', 0, 1, 150.00, 2, 30, TRUE, '2020-02-01', '2025-06-10'),
-(102, 1, 'Brooklyn Loft Experience', 'Spacious loft with exposed brick walls and industrial charm.', 'Hip Brooklyn neighborhood with artisanal coffee shops and galleries.', 'Entire home/apt', 4, 2.0, '2 baths', 2, 2, 200.00, 3, 60, FALSE, '2020-03-15', '2025-06-09'),
+INSERT INTO Listing (listing_id, host_id, name, description, neighbourhood_overview, room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds, price, minimum_nights, maximum_nights, instant_bookable, created_date, last_scraped) VALUES
+(101, 1, 'Cozy Manhattan Studio', 'Modern studio apartment in the heart of NYC with amazing city views.', 'Vibrant neighbourhood with great restaurants and easy subway access.', 'Entire home/apt', 2, 1.0, '1 bath', 0, 1, 150.00, 2, 30, TRUE, '2020-02-01', '2025-06-10'),
+(102, 1, 'Brooklyn Loft Experience', 'Spacious loft with exposed brick walls and industrial charm.', 'Hip Brooklyn neighbourhood with artisanal coffee shops and galleries.', 'Entire home/apt', 4, 2.0, '2 baths', 2, 2, 200.00, 3, 60, FALSE, '2020-03-15', '2025-06-09'),
 (103, 1, 'Central Park View Room', 'Private room with stunning Central Park views.', 'Upper West Side with easy access to museums and parks.', 'Private room', 1, 0.5, 'Half-bath', 1, 1, 95.00, 1, 14, TRUE, '2020-05-20', '2025-06-08'),
 (104, 2, 'Hollywood Hills Retreat', 'Luxury home with pool and panoramic city views.', 'Exclusive Hollywood Hills area with celebrity neighbors.', 'Entire home/apt', 6, 3.0, '3 full baths', 3, 4, 350.00, 7, 90, FALSE, '2019-07-01', '2025-06-07'),
 (105, 2, 'Venice Beach Bungalow', 'Charming beach house just steps from the ocean.', 'Bohemian Venice with street art, boardwalk, and beach culture.', 'Entire home/apt', 3, 1.5, '1.5 baths', 2, 2, 180.00, 2, 45, TRUE, '2019-09-12', '2025-06-06'),

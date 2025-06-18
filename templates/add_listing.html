@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="main-content">
+    <h1>Add New Listing</h1>
+
+    {% for mesg in get_flashed_messages() %}
+      <h1>{{ mesg }}</h1>
+		{% endfor %}
+
+    <form method="post" action="{{ url_for('add_listing') }}">
+			<div class="form-group">
+				<label for="listing_id" class="form-label">Listing ID</label>
+				<input id="listing_id" name="listing_id" type="number" class="form-control" required>
+			</div>
+
+      <div class="form-group">
+        <label for="host_id" class="form-label">Host</label>
+        <select id="host_id" name="host_id" class="form-control" required>
+          <option value="">Select a host</option>
+          {% for id, name in hosts %}
+            <option value="{{ id }}">{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="name" class="form-label">Listing Name</label>
+        <input id="name" name="name" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">Description</label>
+        <textarea id="description" name="description" class="form-control"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="neighbourhood_overview" class="form-label">Neighbourhood Overview</nabel>
+        <textarea id="neighbourhood_overview" name="neighbourhood_overview" class="form-control"></textarea>
+      </div>
+
+      <div class="form-group">
+				<label for="room_type" class="form-label">Room Type</label>
+				<select id="room_type" name="room_type" class="form-control">
+					<option value="">Select a room type</option>
+					<option value="Entire home/apt">Entire home/apt</option>
+					<option value="Private room">Private room</option>
+				</select>
+			</div>
+
+      <div class="form-group">
+        <label for="accommodates" class="form-label">Accommodates</label>
+        <input id="accommodates" name="accommodates" type="number" min="1" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="bathrooms" class="form-label">Bathrooms</label>
+        <input id="bathrooms" name="bathrooms" type="number" step="0.5" min="0" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="bathrooms_text" class="form-label">Bathrooms (text)</label>
+        <input id="bathrooms_text" name="bathrooms_text" placeholder="e.g. 1 bath" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="bedrooms" class="form-label">Bedrooms</label>
+        <input id="bedrooms" name="bedrooms" type="number" min="0" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="beds" class="form-label">Beds</label>
+        <input id="beds" name="beds" type="number" min="0" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="price" class="form-label">Price ($)</label>
+        <input id="price" name="price" type="number" step="0.01" min="0" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="minimum_nights" class="form-label">Minimum Nights</label>
+        <input id="minimum_nights" name="minimum_nights" type="number" min="1" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="maximum_nights" class="form-label">Maximum Nights</label>
+        <input id="maximum_nights" name="maximum_nights" type="number" min="1" class="form-control">
+      </div>
+
+			<div class="form-group">
+				<label for="neighbourhood_name" class="form-label">Neighbourhood Name</label>
+				<input id="neighbourhood_name" name="neighbourhood_name" class="form-control" required>
+			</div>
+
+			<div class="form-group">
+				<label for="neighbourhood_group" class="form-label">Neighbourhood Group</label>
+				<input id="neighbourhood_group" name="neighbourhood_group" class="form-control">
+			</div>
+
+			<div class="form-group">
+				<label for="latitude" class="form-label">Latitude</label>
+				<input id="latitude" name="latitude" type="number" step="0.00000001" class="form-control">
+			</div>
+
+			<div class="form-group">
+				<label for="longitude" class="form-label">Longitude</label>
+				<input id="longitude" name="longitude" type="number" step="0.00000001" class="form-control">
+			</div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <input type="checkbox" name="instant_bookable"> Instant Bookable
+        </label>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create Listing</button>
+        <button type="button" class="btn btn-secondary" onclick=window.location='{{ url_for('view_listings') }}'>Cancel</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

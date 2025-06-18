@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="main-content">
+    <h1>Delete Listing</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('delete_listing') }}">
+      <div class="form-group">
+        <label for="listing_id" class="form-label">Listing ID to delete</label>
+        <input id="listing_id" name="listing_id" type="number" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-secondary" onclick=window.location='{{ url_for('view_listings') }}'>Cancel</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
