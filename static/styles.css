@@ -305,3 +305,81 @@ th {
         width: 100%;
       }
     }
+
+/* DARK MODE */
+.dark-theme {
+  --bg-color: #393E46;
+  --fg-color: #EEEEEE;
+  --panel-bg: #2C2F33;
+}
+
+body {
+  background-color: var(--bg-color, #f9f9f9);
+  color: var(--fg-color, #333333);
+}
+
+.sidebar {
+  background-color: var(--panel-bg, #f2f2f2);
+}
+
+.main-content {
+  background-color: var(--panel-bg, #ffffff);
+}
+
+/* keep your blue buttons the same */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+/* ---- THEME VARIABLES ---- */
+:root {
+  --bg-color: #f9f9f9;
+  --panel-bg: #ffffff;
+  --sidebar-bg: #f2f2f2;
+  --fg-color: #333333;
+}
+
+.dark-theme {
+  --bg-color: #393E46;
+  --panel-bg: #2C2F33;
+  --sidebar-bg: #393E46;
+  --fg-color: #EEEEEE;
+}
+
+/* apply variables */
+body {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+}
+
+.sidebar {
+  background-color: var(--sidebar-bg);
+}
+
+.main-content {
+  background-color: var(--panel-bg);
+}
+
+/* sidebar header layout */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+/* toggle button styling */
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem;
+  color: var(--fg-color);
+}
+
+.theme-toggle:focus {
+  outline: 2px solid #007bff;
+}
