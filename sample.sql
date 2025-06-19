@@ -17,7 +17,32 @@ INSERT INTO Listing (listing_id, host_id, name, description, neighbourhood_overv
 (107, 4, 'South Beach Penthouse', 'Luxury penthouse with ocean views and rooftop access.', 'Art Deco district with nightlife, dining, and beach access.', 'Entire home/apt', 8, 4.0, '4 full bathrooms', 4, 6, 500.00, 5, 120, FALSE, '2018-12-10', '2025-06-04'),
 (108, 4, 'Coral Gables Villa', 'Mediterranean-style villa with private garden and pool.', 'Upscale Coral Gables with historic architecture and fine dining.', 'Entire home/apt', 5, 2.5, '2.5 baths', 3, 3, 280.00, 3, 75, FALSE, '2019-01-20', '2025-06-03'),
 (109, 5, 'Music District Loft', 'Industrial loft in the heart of Austins live music scene.', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 165.00, 2, 21, TRUE, '2022-09-01', '2025-06-02'),
-(110, 5, 'Goldrej Loft', 'Something somethihng', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 240.00, 2, 21, TRUE, '2022-09-01', '2025-06-02');
+(110, 5, 'Goldrej Loft', 'Something somethihng', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 240.00, 2, 21, TRUE, '2022-09-01', '2025-06-02'),
+(111, 2, 'Greenwood Heights Studio', 
+  'Bright studio loft steps from local cafés and parks.',
+  'Quiet residential block with leafy streets and artisan shops.',
+  'Entire home/apt', 2, 1.0, '1 bath', 0, 1,
+  130.00, 1, 30, TRUE, '2025-01-15', '2025-06-12'),
+(112, 4, 'Greenwood Heights Room', 
+  'Cozy private room in a shared brownstone, close to subway.',
+  'Historic neighbourhood with weekend markets and green spaces.',
+  'Private room', 1, 0.5, 'Half-bath', 1, 1,
+  75.00, 2, 14, FALSE, '2025-02-10', '2025-06-11'),
+(113, 3, 'Mission District Flat', 
+  'Charming 1‑bed flat with skyline views and street murals.',
+  'Vibrant area full of murals, coffee shops, and nightlife.',
+  'Entire home/apt', 2, 1.5, '1.5 baths', 1, 1,
+  210.00, 2, 45, TRUE, '2025-03-05', '2025-06-10'),
+(114, 3, 'Mission District Room', 
+  'Sunny private room in a Victorian home, walking distance to parks.',
+  'Eclectic neighbourhood with tacos, galleries, and live music.',
+  'Private room', 1, 1.0, '1 bath', 1, 1,
+  95.00, 1, 20, TRUE, '2025-04-01', '2025-06-09'),
+(115, 5, 'Mission District Studio', 
+  'Modern studio with kitchenette and bike storage.',
+  'Hip area perfect for cyclists—flat terrain and dedicated lanes.',
+  'Entire home/apt', 2, 1.0, '1 bath', 0, 1,
+  185.00, 3, 60, FALSE, '2025-05-12', '2025-06-08');
 
 -- NEIGHBOURHOOD table (9 records - one for each listing)
 INSERT INTO Neighbourhood (neighbourhood_id, listing_id, name, neighbourhood_group, latitude, longitude) VALUES
@@ -30,7 +55,12 @@ INSERT INTO Neighbourhood (neighbourhood_id, listing_id, name, neighbourhood_gro
 (7, 107, 'South Beach', 'Miami Beach', 25.7907, -80.1300),
 (8, 108, 'Coral Gables', 'Miami-Dade', 25.7454, -80.2534),
 (9, 109, 'East Austin', 'Austin', 30.2672, -97.7431),
-(10, 110, 'East Austin', 'Austin', 30.2672, -97.7431);
+(10, 110, 'East Austin', 'Austin', 30.2672, -97.7431),
+(11, 111, 'Greenwood Heights', 'Brooklyn', 40.6500, -73.9950),
+(12, 112, 'Greenwood Heights', 'Brooklyn', 40.6500, -73.9950),
+(13, 113, 'Mission District', 'San Francisco', 37.7599, -122.4148),
+(14, 114, 'Mission District', 'San Francisco', 37.7599, -122.4148),
+(15, 115, 'Mission District', 'San Francisco', 37.7599, -122.4148);
 
 -- LISTING_AMENITY table (covering various amenities across listings)
 INSERT INTO ListingAmenity (listing_id, amenity) VALUES
