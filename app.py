@@ -30,7 +30,38 @@ def init_db():
 # Route for homepage.
 @app.route('/')
 def home():
-    return render_template('home.html')
+    #return render_template('home.html')
+    # Fetch top 3 listings per neighbourhood by avg rating DESC, price ASC
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    SELECT
+    l.listing_id,
+    l.name,
+    l.price,
+    n.name AS neighbourhood,
+    COALESCE(AVG(r.rating), 0) AS avg_rating
+    FROM Listing l
+    JOIN Neighbourhood n ON n.listing_id = l.listing_id
+    LEFT JOIN Review r ON r.listing_id = l.listing_id
+    GROUP BY l.listing_id, l.name, l.price, n.name
+    ORDER BY avg_rating DESC, l.price ASC
+    LIMIT 3;
+    """)
+    rows = cur.fetchall()
+    top_listings = [
+        {
+            "listing_id":    r[0],
+            "name":          r[1],
+            "price":         float(r[2]),
+            "avg_rating": float(r[4]),
+            "neighbourhood": r[3]
+        }
+        for r in rows[:3]
+    ]
+    cur.close()
+    conn.close()
+    return render_template("home.html", top_listings=top_listings)
 
 # Route to add sample data to the listings database.
 @app.route('/add-sample')
@@ -275,6 +306,76 @@ def add_listing():
     conn.close()
 
     return render_template('add_listing.html', hosts=hosts)
+
+
+# Route to update a particular listing.
+@app.route('/update-listing', methods=['GET', 'POST'])
+def update_listing():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    if request.method == 'POST':
+        listing_id = request.form.get('listing_id', type=int)
+        # Check existence
+        cur.execute('SELECT 1 FROM Listing WHERE listing_id = %s;', (listing_id,))
+        if not cur.fetchone():
+            flash(f'No such listing exists: {listing_id}', 'error')
+            cur.close()
+            conn.close()
+            return redirect(url_for('update_listing'))
+
+        # Gather all optional fields
+        fields = {
+            'name': request.form.get('name'),
+            'description': request.form.get('description'),
+            'neighbourhood_overview': request.form.get('neighbourhood_overview'),
+            'room_type': request.form.get('room_type'),
+            'accommodates': request.form.get('accommodates', type=int),
+            'bathrooms': request.form.get('bathrooms', type=float),
+            'bedrooms': request.form.get('bedrooms', type=int),
+            'price': request.form.get('price', type=float),
+            'minimum_nights': request.form.get('minimum_nights', type=int)
+        }
+        nbhd = {
+            'name': request.form.get('neighbourhood_name'),
+            'neighbourhood_group': request.form.get('neighbourhood_group'),
+            'latitude': request.form.get('latitude', type=float),
+            'longitude': request.form.get('longitude', type=float)
+        }
+
+        # Build SET clauses for Listing table
+        set_clauses = []
+        params = []
+        for col, val in fields.items():
+            if val is not None and val != '':
+                set_clauses.append(f"{col} = %s")
+                params.append(val)
+        if set_clauses:
+            sql = f"UPDATE Listing SET {', '.join(set_clauses)} WHERE listing_id = %s;"
+            params.append(listing_id)
+            cur.execute(sql, params)
+
+        # Build SET clauses for Neighbourhood table
+        set_nb_clauses = []
+        nb_params = []
+        for col, val in nbhd.items():
+            if val is not None and val != '':
+                set_nb_clauses.append(f"{col} = %s")
+                nb_params.append(val)
+        if set_nb_clauses:
+            sql_n = f"UPDATE Neighbourhood SET {', '.join(set_nb_clauses)} WHERE listing_id = %s;"
+            nb_params.append(listing_id)
+            cur.execute(sql_n, nb_params)
+
+        conn.commit()
+        flash(f'Update to listing {listing_id} successful', 'success')
+        cur.close()
+        conn.close()
+        return redirect(url_for('view_listings'))
+
+    # GET: render form
+    cur.close()
+    conn.close()
+    return render_template('update_listing.html')
 
 # Route to delete a particular listing.
 @app.route('/delete-listing', methods=['GET', 'POST'])
