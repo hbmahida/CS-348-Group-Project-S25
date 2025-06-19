@@ -2,34 +2,36 @@
 {% block content %}
   <h1>Listings</h1>
 
-  <!-- Search & Filter Bar -->
-  <div class="search-container">
-    <form method="get" action="{{ url_for('view_listings') }}" style="display: flex; gap:1rem; width:100%;">
-      <input
-        type="text"
-        name="search"
-        class="search-input"
-        placeholder="🔍 Search"
-        value="{{ current_filters.search }}"
-      >
-      <button type="button" class="btn" onclick="openFilterModal()">⚙️ Filter</button>
-      <!-- you can wire up search later -->
-    </form>
-  </div>
+  {% for mesg in get_flashed_messages() %}
+    <h1>{{ mesg }}</h1>
+  {% endfor %}
 
-  <!-- Filter Modal -->
-  <div class="modal" id="filterModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
+  <!-- Search + Filter + Sort Bar -->
+  <form id="filterForm" method="get" action="{{ url_for('view_listings') }}" style="display: flex; gap:1rem; width:100%;">
+    <div class="search-container">
+        <input
+          type="text"
+          name="search"
+          class="search-input"
+          placeholder="🔍 Search"
+          value="{{ current_filters.search }}"
+        >
+        <button type="button" class="btn" onclick="openFilterModal()">⚙️ Filter</button>
+        <button type="button" class="btn" onclick="openSortModal()">⚙️ Sort</button>
+    </div>
 
-        <div class="modal-header">
-          <h3 class="modal-title">Filter Listings</h3>
-          <button class="close-btn" onclick="closeFilterModal()">×</button>
-        </div>
+    <!-- Filter Modal -->
+    <div class="modal" id="filterModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
 
-        <!-- Filter Form -->
-        <form method="get" action="{{ url_for('view_listings') }}">
+          <div class="modal-header">
+            <h3 class="modal-title">Filter Listings</h3>
+            <button class="close-btn" onclick="closeFilterModal()">×</button>
+          </div>
+
           <div class="modal-body">
+
             <div class="form-group">
               <label for="neighbourhood">Neighbourhood</label>
               <select id="neighbourhood" name="neighbourhood">
@@ -81,18 +83,71 @@
                 placeholder="e.g. 1"
                 value="{{ current_filters.min_nights }}"
               >
-            </div>
+            </div>   
           </div>
 
           <div class="modal-footer" style="justify-content:center;">
             <button type="button" class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
             <button type="submit" class="btn btn-primary">Apply Filters</button>
-          </div>
-        </form>
+          </div>        
 
+        </div>
       </div>
     </div>
-  </div>
+
+      <!-- Sort Modal -->
+    <div class="modal" id="sortModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h3 class="modal-title">Sort Listings</h3>
+            <button
+              class="close-btn"
+              onclick="closeSortModal()"
+            >×</button>
+          </div>
+
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="sort_by">Sort by</label>
+              <select id="sort_by" name="sort_by">
+                <option value="">Default</option>
+                <option value="price" {% if current_filters.sort_by=='price' %}selected{% endif %}>
+                  Price
+                </option>
+                <option value="name" {% if current_filters.sort_by=='name' %}selected{% endif %}>
+                  Name
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="sort_order">Direction</label>
+              <select id="sort_order" name="sort_order">
+                <option value="asc"  {% if current_filters.sort_order=='asc'  %}selected{% endif %}>Ascending</option>
+                <option value="desc" {% if current_filters.sort_order=='desc' %}selected{% endif %}>Descending</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="justify-content:center;">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="clearSort()"
+            >Clear Sort</button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >Apply Sort</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </form>
+
 
   <!-- Listings Table -->
   <table>
@@ -148,6 +203,35 @@
     // ESC key
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeFilterModal();
+    });
+
+    function openSortModal() {
+    document.getElementById('sortModal').classList.add('show');
+    }
+
+    function closeSortModal() {
+      document.getElementById('sortModal').classList.remove('show');
+    }
+
+    // clear the two sort selects
+    function clearSort() {
+      document.getElementById('sort_by').value = '';
+      document.getElementById('sort_order').value = 'asc';
+    }
+
+    // close modals on outside click / ESC
+    ['filterModal','sortModal'].forEach(id => {
+      const m = document.getElementById(id);
+      m.addEventListener('click', e => {
+        if (e.target === m) m.classList.remove('show');
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key==='Escape') {
+        closeFilterModal();
+        closeSortModal();
+      }
     });
   </script>
 {% endblock %}

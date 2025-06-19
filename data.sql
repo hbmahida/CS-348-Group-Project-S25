@@ -25,7 +25,7 @@ CREATE TABLE Listing (
   host_id           INTEGER      NOT NULL,
   name              VARCHAR(500) NOT NULL,
   description       TEXT,
-  neighborhood_overview TEXT,
+  neighbourhood_overview TEXT,
   room_type         VARCHAR(100),
   accommodates      INTEGER      CHECK (accommodates > 0),
   bathrooms         DECIMAL(3,1) CHECK (bathrooms >= 0),
