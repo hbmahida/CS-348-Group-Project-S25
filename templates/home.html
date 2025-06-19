@@ -1,5 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Welcome to Airbnb Listings Manager</h1>
-<p>Manage your listings using the sidebar.</p>
+<p>Manage your listings using the sidebar. Below are the top 3 properties.</p>
+<table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Price</th>
+        <th>Rating</th>
+        <th>Neighbourhood</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in top_listings %}
+      <tr>
+        <td>{{ l.listing_id }}</td>
+        <td>{{ l.name }}</td>
+        <td>${{ '%.2f'|format(l.price) }}</td>
+        <td>{{ '%.2f'|format(l.avg_rating) }}</td>
+        <td>{{ l.neighbourhood }}</td>
+      </tr>
+      {% endfor %}
+      {% if top_listings|length == 0 %}
+      <tr>
+        <td colspan="5" style="text-align:center;">No listings available.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+</table>
 {% endblock %}
