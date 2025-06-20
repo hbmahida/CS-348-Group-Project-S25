@@ -32,11 +32,11 @@ This application is a database-driven web platform built for CS 348 that allows 
 - **🏆 Top 3 Properties**: View the top 3 highest-rated or most popular properties
 
 ### Technical Features
-- RESTful API design
 - PostgreSQL database integration
-- Responsive web interface
 - Data validation and error handling
 - Sample data management
+- RESTful API design
+- Responsive web interface
 
 ## 🔧 Prerequisites
 
