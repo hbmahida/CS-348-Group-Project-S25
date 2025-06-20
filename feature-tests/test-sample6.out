@@ -1,0 +1,7 @@
+ listing_id |           name           | price  |  neighbourhood  |     avg_rating     
+------------+--------------------------+--------+-----------------+--------------------
+        104 | Hollywood Hills Retreat  | 350.00 | Hollywood Hills | 5.0000000000000000
+        102 | Brooklyn Loft Experience | 200.00 | Williamsburg    | 4.9000000000000000
+        106 | Tech Hub Apartment       | 220.00 | SOMA            | 4.9000000000000000
+(3 rows)
+

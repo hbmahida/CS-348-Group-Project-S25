@@ -1,0 +1,19 @@
+ listing_id |           name           | price  |    room_type    |   neighbourhood   |     avg_rating     | review_count 
+------------+--------------------------+--------+-----------------+-------------------+--------------------+--------------
+        107 | South Beach Penthouse    | 500.00 | Entire home/apt | South Beach       | 4.9000000000000000 |            2
+        104 | Hollywood Hills Retreat  | 350.00 | Entire home/apt | Hollywood Hills   | 5.0000000000000000 |            1
+        108 | Coral Gables Villa       | 280.00 | Entire home/apt | Coral Gables      | 4.6000000000000000 |            1
+        110 | Goldrej Loft             | 240.00 | Entire home/apt | East Austin       |                    |            0
+        106 | Tech Hub Apartment       | 220.00 | Entire home/apt | SOMA              | 4.9000000000000000 |            1
+        113 | Mission District Flat    | 210.00 | Entire home/apt | Mission District  |                    |            0
+        102 | Brooklyn Loft Experience | 200.00 | Entire home/apt | Williamsburg      | 4.9000000000000000 |            1
+        115 | Mission District Studio  | 185.00 | Entire home/apt | Mission District  |                    |            0
+        105 | Venice Beach Bungalow    | 180.00 | Entire home/apt | Venice            | 4.5500000000000000 |            2
+        109 | Music District Loft      | 165.00 | Entire home/apt | East Austin       | 4.5000000000000000 |            3
+        101 | Cozy Manhattan Studio    | 150.00 | Entire home/apt | Midtown Manhattan | 4.6500000000000000 |            2
+        111 | Greenwood Heights Studio | 130.00 | Entire home/apt | Greenwood Heights |                    |            0
+        114 | Mission District Room    |  95.00 | Private room    | Mission District  |                    |            0
+        103 | Central Park View Room   |  95.00 | Private room    | Upper West Side   | 4.4000000000000000 |            2
+        112 | Greenwood Heights Room   |  75.00 | Private room    | Greenwood Heights |                    |            0
+(15 rows)
+
