@@ -196,6 +196,12 @@ Fill out the form with:
 CS-348-Group-Project-S25/
 ├── __pycache__/          # Python cache files
 │   └── db_config.cpython-311.pyc
+├── feature-tests/        # Tests for each SQL feature
+│   ├── test-sample1.sql  # Feature 1
+│   ├── test-sample1.out
+|       ....
+│   ├── test-sample7.sql  # Feature 7
+│   └── test-sample7.out
 ├── static/               # Static files (CSS, JS, images)
 │   └── styles.css        # Main stylesheet
 ├── templates/            # HTML templates
