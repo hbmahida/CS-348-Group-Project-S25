@@ -216,10 +216,10 @@ CS-348-Group-Project-S25/
 ├── .gitignore            # Git ignore file
 ├── README.md             # Project documentation
 ├── app.py                # Main Flask application
-├── data.sql              # Sample data SQL file
+├── data.sql              # Main SQL DDL queries
 ├── db_config.py          # Database configuration
 ├── requirements.txt      # Python dependencies
-└── sample.sql            # Main SQL DDL queries
+└── sample.sql            # Sample Dataset
 ```
 
 ## 🔧 Troubleshooting
