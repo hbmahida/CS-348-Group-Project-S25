@@ -1,34 +1,274 @@
-# CS-348-Group-Project-S25
-## Setup 🔧
-- Clone the GitHub repo.
-- Enter the following command into the VSCode terminal: `pip install -r requirements.txt`.
-- Have PostgreSQL installed on your local machine with default installation settings.
-- Download pgAdmin4 and connect that to the PostgreSQL database.
-- Create a database titled `listings_db`.
-- Click on the Query Tool and create a relation (table) called `listings` in that database using the following command:
-```SQL
-CREATE TABLE listings (
-    id                SERIAL        PRIMARY KEY,
-    name              TEXT          NOT NULL,
-    neighbourhood     TEXT,
-    room_type         TEXT,
-    price             NUMERIC(7,2),      -- CAD $
-    minimum_nights    INT,
-    number_of_reviews INT,
-    availability_365  INT
-);
+# CS-348-Group-Project-S25 🏠
+
+A Flask-based web application for managing property listings with PostgreSQL database integration. This project provides a comprehensive platform for searching, filtering, sorting, and managing property listings data.
+
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Database Setup](#database-setup)
+- [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+- [Usage Guide](#usage-guide)
+- [Project Structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+
+## 🌟 Overview
+
+This application is a database-driven web platform built for CS 348 that allows users to manage property listings. It features a Flask backend connected to a PostgreSQL database, providing full CRUD operations and advanced search capabilities for property data.
+
+## ✨ Features
+
+### Core Functionality
+- **🔍 Search Listings**: Search properties by name, neighborhood, or other criteria
+- **🔧 Filter Listings**: Filter properties by room type, price range, minimum nights, etc.
+- **📊 Sort Listings**: Sort results by price, name in ascending or descing order.
+- **➕ Add Listing**: Create new property listings
+- **🗑️ Remove Listing**: Delete existing property listings
+- **✏️ Update Listing**: Modify existing property information
+- **🏆 Top 3 Properties**: View the top 3 highest-rated or most popular properties
+
+### Technical Features
+- RESTful API design
+- PostgreSQL database integration
+- Responsive web interface
+- Data validation and error handling
+- Sample data management
+
+## 🔧 Prerequisites
+
+Before setting up the project, ensure you have the following installed:
+
+- **Python 3.7+** - [Download Python](https://python.org/downloads/)
+- **PostgreSQL** - [Download PostgreSQL](https://www.postgresql.org/download/)
+- **pgAdmin4** - [Download pgAdmin4](https://www.pgadmin.org/download/) [Not needed if installed with PostgreSQL]
+- **Git** - [Download Git](https://git-scm.com/downloads)
+- **Code Editor** (VS Code recommended)
+
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/hbmahida/CS-348-Group-Project-S25.git
+cd CS-348-Group-Project-S25
 ```
-- Run the Flask server using the following command: `python app.py`.
-- Enter the following URL in your browser: `http://127.0.0.1:5000`.
 
-## Steps to add the sample data
-- Hit the endpoint `/add-reviews`.
-- A message confirming that the data has been added will be displayed on the screen.
+### 2. Create Virtual Environment (Recommended)
+```bash
+# Create virtual environment
+python -m venv venv
 
-## Steps to get the sample data
-- Hit the endpoint `/get-reviews`.
-- A message containing all the movies in the relation will be displayed on the screen.
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
 
-## Steps to remove all sample data
-- Hit the endpoint `/delete-all-reviews`.
-- A message confirming that the data has been removed will be displayed on the screen.
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+## 🗄️ Database Setup
+
+### 1. Install and Configure PostgreSQL
+- Install PostgreSQL with default settings
+- Remember your PostgreSQL username and password
+- Ensure PostgreSQL service is running
+- pgAdmin4 will be installed in this package itself
+
+### 2. Setup pgAdmin4
+- Open pgAdmin4
+- Use your PostgreSQL credentials to connect
+
+### 3. Create Database
+1. In pgAdmin4, right-click on "Databases"
+2. Select "Create" → "Database..."
+3. Enter database name: `listings_db`
+4. Click "Save"
+
+### 4. Configure Database Connection
+Ensure your Flask application is configured with the correct database credentials. Check your configuration file `DB_CONFIG.py` for:
+- Database host (usually `localhost`)
+- Database port (usually `5432`)
+- Database name (`listings_db`)
+- Username and password
+
+## 🏃‍♂️ Running the Application
+
+### 1. Start the Flask Server
+```bash
+python3 app.py
+```
+
+### 2. Access the Application
+Open your web browser and navigate to:
+```
+http://127.0.0.1:5000
+```
+
+You should see the application's home page with available features.
+
+## 🔗 API Endpoints
+
+### Data Management Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/view-listings` | Retrieve all listings from the database |
+| POST | `/add-sample` | Add all sample listings |
+| GET | `/delete-all` | Remove all listings from the database |
+
+### Core Feature Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET/POST | `/view-listings` | Search listings by various criteria |
+| GET/POST | `/view-listings` | Filter listings by specific parameters |
+| GET/POST | `/view-listings` | Sort listings by different fields |
+| POST | `/add-listing` | Add a new listing |
+| DELETE | `/delete-listing` | Remove a specific listing |
+| PUT | `/update-listing` | Update an existing listing |
+| GET | `/` | View top 3 properties in the home page |
+
+## 📖 Usage Guide
+
+### Initial Setup with Sample Data
+
+1. **Add Sample Data**
+   - Navigate to `http://127.0.0.1:5000/add-listing`
+   - You'll see a confirmation message that sample data has been added
+
+2. **View All Listings**
+   - Navigate to `http://127.0.0.1:5000/view-listings`
+   - This displays all listings in the database
+
+3. **Clear All Data** (if needed)
+   - Navigate to `http://127.0.0.1:5000/delete-all`
+   - This removes all listings from the database
+
+### Using Core Features
+
+#### 🔍 Search Listings
+- Use the search functionality to find properties by name, neighborhood, or other criteria
+- Enter search terms in the search box and click "Search"
+
+#### 🔧 Filter Listings
+- Apply filters to narrow down results:
+  - **Room Type**: Filter by "Entire home/apt", "Private room", "Shared room"
+  - **Price Range**: Set minimum and maximum price limits
+  - **Minimum Nights**: Filter by minimum stay requirements
+  - **Neighbourhood**: Filter by neighbourhood of listings
+
+#### 📊 Sort Listings
+- Sort results by:
+  - Price (ascending/descending)
+  - Name (ascending/descending)
+
+#### ➕ Add New Listing
+Fill out the form with:
+- Property name (required)
+- Neighborhood information
+- Room type
+- Number of people accomodated
+- Number of bedrooms, bathrooms, beds
+- Price per night (CAD)
+- Minimum - Maximum nights required
+- Latitude & Longitude
+
+#### ✏️ Update Listing
+- Select a listing to modify
+- Update the desired fields
+- Save changes
+
+#### 🗑️ Remove Listing
+- Select the listing you want to delete
+- Confirm deletion
+
+#### 🏆 View Top Properties
+- Access the top 3 properties based on price, rating in the home page
+
+## 📁 Project Structure
+
+```
+CS-348-Group-Project-S25/
+├── __pycache__/          # Python cache files
+│   └── db_config.cpython-311.pyc
+├── static/               # Static files (CSS, JS, images)
+│   └── styles.css        # Main stylesheet
+├── templates/            # HTML templates
+│   ├── add_listing.html  # Add new listing page
+│   ├── add_sample.html   # Add sample data page
+│   ├── base.html         # Base template
+│   ├── delete_all.html   # Delete all listings page
+│   ├── delete_listing.html # Delete specific listing page
+│   ├── home.html         # Home page
+│   ├── update_listing.html # Update listing page
+│   └── view_listings.html # View all listings page
+├── .gitignore            # Git ignore file
+├── README.md             # Project documentation
+├── app.py                # Main Flask application
+├── data.sql              # Sample data SQL file
+├── db_config.py          # Database configuration
+├── requirements.txt      # Python dependencies
+└── sample.sql            # Main SQL DDL queries
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### Database Connection Issues
+- **Error**: `could not connect to server`
+  - **Solution**: Ensure PostgreSQL service is running
+  - Check if the port 5432 is available
+  - Verify database credentials
+
+#### Import Errors
+- **Error**: `ModuleNotFoundError`
+  - **Solution**: Ensure all dependencies are installed: `pip install -r requirements.txt`
+  - Check if virtual environment is activated
+
+#### Flask App Not Starting
+- **Error**: `Address already in use`
+  - **Solution**: Kill existing processes on port 5000 or use a different port
+  - On Windows: `netstat -ano | findstr :5000`
+  - On macOS/Linux: `lsof -ti:5000 | xargs kill -9`
+
+
+### Getting Help
+
+If you encounter issues:
+1. Check the console/terminal for error messages
+2. Verify database connection and table existence
+3. Ensure all dependencies are properly installed
+4. Check if the Flask server is running on the correct port
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Create a Pull Request
+
+## 📝 Notes
+
+- This application uses PostgreSQL as the database backend
+- All prices are in Canadian Dollars (CAD)
+- The application is designed for educational purposes as part of CS 348
+- Sample data includes various property types and neighborhoods
+
+## 🔒 Security Considerations
+
+- Ensure database credentials are not exposed in public repositories
+- Use environment variables for sensitive configuration
+- Validate all user input before database operations
+- Implement proper error handling for production use
+
+---
+
+**CS 348 - Introduction to Database Management**  
+*Database-driven web application project*
