@@ -15,7 +15,7 @@ WHERE 1=1
   AND n.name            = 'Mission District'
   AND l.room_type       = 'Entire home/apt'
   AND l.price           >= 50
-  AND l.price           <= 150
+  AND l.price           <= 550
   AND l.minimum_nights  >= 2
 GROUP BY
   l.listing_id,

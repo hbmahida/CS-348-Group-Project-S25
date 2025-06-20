@@ -96,7 +96,7 @@ def add_sample():
 
     return render_template('add_sample.html', message=message)
 
-# Route for viewing the listings filtered by 
+# Route for viewing the listings with search, sort, and filter functionality.
 @app.route('/view-listings')
 def view_listings():
     conn = get_db_connection()
@@ -109,7 +109,7 @@ def view_listings():
     price_min     = request.args.get('price_min',    type=float)
     price_max     = request.args.get('price_max',    type=float)
     min_nights    = request.args.get('min_nights',   type=int)
-    sort_by     = request.args.get('sort_by',      type=str)  # 'price' | 'name' | ''
+    sort_by     = request.args.get('sort_by',      type=str)
     sort_order  = request.args.get('sort_order',   type=str)
 
     # 2. Build base query (join on Neighbourhood.listing_id)
