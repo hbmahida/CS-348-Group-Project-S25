@@ -4,9 +4,9 @@ from psycopg2 import errors, IntegrityError
 from db_config import DB_CONFIG
 from datetime import date
 import os
+from data_ingestion import load_production_data_if_needed
 
 app = Flask(__name__)
-
 # Secret key for session/flash support (set this to a secure random value)
 app.secret_key = os.urandom(24)
 
@@ -111,6 +111,8 @@ def view_listings():
     min_nights    = request.args.get('min_nights',   type=int)
     sort_by     = request.args.get('sort_by',      type=str)
     sort_order  = request.args.get('sort_order',   type=str)
+    page        = request.args.get('page', type=int) or 1
+    per_page    = 20
 
     # 2. Build base query (join on Neighbourhood.listing_id)
     base_query = """
@@ -161,8 +163,10 @@ def view_listings():
         params.append(min_nights)
 
     # 4. Stitching the query together.
+    where_sql = ""
     if where_clauses:
-        base_query += " WHERE " + " AND ".join(where_clauses)
+        where_sql = " WHERE " + " AND ".join(where_clauses)
+        base_query += where_sql
     base_query += group_by
 
     if sort_by == 'price':
@@ -177,10 +181,11 @@ def view_listings():
         ORDER BY avg_rating DESC NULLS LAST,
         l.price ASC
         """
-    base_query += ";" # End of query
+    base_query += f"\nLIMIT %s OFFSET %s;" # End of query
+    params_with_pagination = params + [per_page, (page-1)*per_page]
 
     # 5. Execute and fetch
-    cur.execute(base_query, params)
+    cur.execute(base_query, params_with_pagination)
     rows = cur.fetchall()
     listings = [
         {
@@ -195,7 +200,13 @@ def view_listings():
         for r in rows
     ]
 
-    # 6. Fetch distinct options for your filter dropdowns
+    # 6. Fetch total count for pagination
+    count_query = f"SELECT COUNT(*) FROM (SELECT l.listing_id FROM Listing l JOIN Neighbourhood n ON n.listing_id = l.listing_id LEFT JOIN Review r ON r.listing_id = l.listing_id {where_sql} {group_by}) AS sub;"
+    cur.execute(count_query, params)
+    total_count = cur.fetchone()[0]
+    total_pages = (total_count + per_page - 1) // per_page
+
+    # 7. Fetch distinct options for your filter dropdowns
     cur.execute("SELECT DISTINCT name FROM Neighbourhood ORDER BY name;")
     neighbourhoods = [n[0] for n in cur.fetchall()]
 
@@ -205,7 +216,7 @@ def view_listings():
     cur.close()
     conn.close()
 
-    # 7. Render with everything the template needs
+    # 8. Render with everything the template needs
     return render_template(
       'view_listings.html',
       listings=listings,
@@ -219,7 +230,9 @@ def view_listings():
         'min_nights':    min_nights    or '',
         'sort_by':       sort_by       or '',
         'sort_order':    sort_order    or ''
-      }
+      },
+      page=page,
+      total_pages=total_pages
     )
 
 # Route to add listings from users (currently an admin user)
@@ -419,4 +432,8 @@ def delete_all():
 if __name__ == '__main__':
     # Ensure the schema is created before handling requests
     init_db()
+    
+    # Load production data if database is empty
+    load_production_data_if_needed()
+    
     app.run(debug=True)
