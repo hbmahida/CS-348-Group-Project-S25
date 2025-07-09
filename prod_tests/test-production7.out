@@ -1,0 +1,24 @@
+ listing_id |                        name                        |  price  |    room_type    |           neighbourhood           |     avg_rating     | review_count 
+------------+----------------------------------------------------+---------+-----------------+-----------------------------------+--------------------+--------------
+    6219856 | West Queen West dwtn condo                         | 9049.00 | Entire home/apt | Niagara                           | 2.4500000000000000 |            1
+    5834694 | Cozy funky bachelor with patio                     | 1000.00 | Entire home/apt | Little Portugal                   |                    |            0
+    4975152 | 5 bdrm, 4.5 bath Stunning House in Midtown         |  992.00 | Entire home/apt | Leaside-Bennington                | 2.4800000000000000 |            1
+    1762021 | Great House on Palmerston Blvd in downtown Toronto |  899.00 | Entire home/apt | Palmerston-Little Italy           | 2.4700000000000000 |            1
+    6032221 | Luxury Home in Prestigious Area                    |  849.00 | Entire home/apt | St.Andrew-Windfields              | 2.4700000000000000 |            1
+    3703115 | Designer Penthouse with Grand Piano & Lake Views   |  657.00 | Entire home/apt | Waterfront Communities-The Island | 2.4200000000000000 |            1
+    4530973 | Fantastic Family Get Away- sleeps 8                |  613.00 | Entire home/apt | Birchcliffe-Cliffside             | 2.4300000000000000 |            1
+     728817 | Bright Victorian Home in Roncesvalles Village      |  550.00 | Entire home/apt | Roncesvalles                      | 3.9000000000000000 |           15
+    2993831 | Spacious Loft w/ Victorian Charm & Balcony!        |  508.00 | Entire home/apt | Palmerston-Little Italy           | 2.3800000000000000 |            1
+    1578070 | Unbeatable Downtown Location                       |  500.00 | Entire home/apt | Waterfront Communities-The Island | 2.3400000000000000 |            1
+    1560504 | A gorgeous house in Queen West!                    |  499.00 | Entire home/apt | Trinity-Bellwoods                 | 2.4600000000000000 |            1
+    5403396 | Beautiful and Bright                               |  495.00 | Entire home/apt | Mount Pleasant East               | 2.4700000000000000 |            1
+    5965950 | Gorgeous Renovated Victorian Roncesvalles Village  |  482.00 | Entire home/apt | Roncesvalles                      | 2.4600000000000000 |            1
+     774352 | Exquisite Yorkville Residence                      |  475.00 | Entire home/apt | Church-Yonge Corridor             | 3.9798684210526316 |           76
+    1269925 | Casa Meya - Toronto Poolhouse Villa                |  450.00 | Entire home/apt | Parkwoods-Donalda                 | 2.4400000000000000 |            1
+    6918683 | Modern One Bedroom Condo in TORONTO                |  450.00 | Entire home/apt | Niagara                           | 2.4600000000000000 |            1
+    3348401 | Spacious, charming 3 storey home in great ‘hood    |  450.00 | Entire home/apt | Roncesvalles                      | 2.5000000000000000 |            1
+    3364609 | South Beach Marina Townhomes                       |  450.00 | Private room    | Niagara                           | 2.2900000000000000 |            1
+    2531934 | Penthouse Loft - CN Tower/Lake View                |  448.00 | Entire home/apt | Niagara                           | 2.4600000000000000 |            1
+     883109 | Spacious, bright, renovated home Toronto-Danforth  |  428.00 | Entire home/apt | Broadview North                   | 3.9000000000000000 |           16
+(20 rows)
+

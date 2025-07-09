@@ -1,0 +1,6 @@
+ listing_id |          name           | price  |    room_type    |  neighbourhood   | avg_rating | review_count 
+------------+-------------------------+--------+-----------------+------------------+------------+--------------
+        115 | Mission District Studio | 185.00 | Entire home/apt | Mission District |            |            0
+        113 | Mission District Flat   | 210.00 | Entire home/apt | Mission District |            |            0
+(2 rows)
+

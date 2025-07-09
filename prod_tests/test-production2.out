@@ -1,0 +1,6 @@
+ listing_id |              name               | price  |    room_type    | neighbourhood |     avg_rating     | review_count 
+------------+---------------------------------+--------+-----------------+---------------+--------------------+--------------
+    3312043 | Danforth Village Century Home   | 356.00 | Entire home/apt | Danforth      | 2.4000000000000000 |            1
+    4311914 | Family getaway in Greek Village | 300.00 | Entire home/apt | Danforth      | 2.3900000000000000 |            1
+(2 rows)
+

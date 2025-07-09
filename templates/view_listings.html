@@ -175,6 +175,65 @@
     </tbody>
   </table>
 
+  <!-- Pagination Controls -->
+  <div style="display: flex; justify-content: center; align-items: center; margin-top: 1.5rem; gap: 1rem;">
+    {% if page > 1 %}
+      <a class="btn" href="{{ url_for('view_listings',
+        search=current_filters.search,
+        neighbourhood=current_filters.neighbourhood,
+        room_type=current_filters.room_type,
+        price_min=current_filters.price_min,
+        price_max=current_filters.price_max,
+        min_nights=current_filters.min_nights,
+        sort_by=current_filters.sort_by,
+        sort_order=current_filters.sort_order,
+        page=1
+      ) }}">&lt;&lt;</a>
+      <a class="btn" href="{{ url_for('view_listings',
+        search=current_filters.search,
+        neighbourhood=current_filters.neighbourhood,
+        room_type=current_filters.room_type,
+        price_min=current_filters.price_min,
+        price_max=current_filters.price_max,
+        min_nights=current_filters.min_nights,
+        sort_by=current_filters.sort_by,
+        sort_order=current_filters.sort_order,
+        page=page-1
+      ) }}">Previous</a>
+    {% else %}
+      <span class="btn btn-disabled" style="pointer-events:none;opacity:0.5;">&lt;&lt;</span>
+      <span class="btn btn-disabled" style="pointer-events:none;opacity:0.5;">Previous</span>
+    {% endif %}
+    <span style="font-weight:bold;">Page {{ page }} of {{ total_pages }}</span>
+    {% if page < total_pages %}
+      <a class="btn" href="{{ url_for('view_listings',
+        search=current_filters.search,
+        neighbourhood=current_filters.neighbourhood,
+        room_type=current_filters.room_type,
+        price_min=current_filters.price_min,
+        price_max=current_filters.price_max,
+        min_nights=current_filters.min_nights,
+        sort_by=current_filters.sort_by,
+        sort_order=current_filters.sort_order,
+        page=page+1
+      ) }}">Next</a>
+      <a class="btn" href="{{ url_for('view_listings',
+        search=current_filters.search,
+        neighbourhood=current_filters.neighbourhood,
+        room_type=current_filters.room_type,
+        price_min=current_filters.price_min,
+        price_max=current_filters.price_max,
+        min_nights=current_filters.min_nights,
+        sort_by=current_filters.sort_by,
+        sort_order=current_filters.sort_order,
+        page=total_pages
+      ) }}">&gt;&gt;</a>
+    {% else %}
+      <span class="btn btn-disabled" style="pointer-events:none;opacity:0.5;">Next</span>
+      <span class="btn btn-disabled" style="pointer-events:none;opacity:0.5;">&gt;&gt;</span>
+    {% endif %}
+  </div>
+
   <!-- Modal Show/Hide Script -->
   <script>
     function openFilterModal() {
