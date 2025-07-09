@@ -1,0 +1,7 @@
+ listing_id |                       name                        | price  |            neighbourhood            |     avg_rating     
+------------+---------------------------------------------------+--------+-------------------------------------+--------------------
+     818228 | Private Room in Downtown Toronto RM2              |  86.00 | Dovercourt-Wallace Emerson-Junction | 3.9977793493635078
+     790887 | Yonge & Wellesley Prime Downtown Shared Apartment | 171.00 | Church-Yonge Corridor               | 3.9974371859296482
+     892352 | Free Parking and Panoramic Views in Bright Loft   | 418.00 | Waterfront Communities-The Island   | 3.9955619596541787
+(3 rows)
+

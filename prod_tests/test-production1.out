@@ -1,0 +1,24 @@
+ listing_id |                        name                        | price  |    room_type    |            neighbourhood            |     avg_rating     | review_count 
+------------+----------------------------------------------------+--------+-----------------+-------------------------------------+--------------------+--------------
+     818228 | Private Room in Downtown Toronto RM2               |  86.00 | Private room    | Dovercourt-Wallace Emerson-Junction | 3.9977793493635078 |          707
+     790887 | Yonge & Wellesley Prime Downtown Shared Apartment  | 171.00 | Private room    | Church-Yonge Corridor               | 3.9974371859296482 |          597
+       8077 | Downtown Harbourfront Private Room                 |  50.00 | Private room    | Waterfront Communities-The Island   | 3.9907058823529412 |          170
+     794506 | Beautiful suite in Downtown Toronto                | 289.00 | Entire home/apt | Waterfront Communities-The Island   | 3.9903773584905660 |          159
+      40456 | Downtown- King Size Bed and Parking                |  50.00 | Entire home/apt | South Parkdale                      | 3.9852631578947368 |          114
+     119441 | STYLISH  LAKEVIEW / KING SIZE BED/DOWNTOWN+PARKING | 125.00 | Entire home/apt | South Parkdale                      | 3.9815116279069767 |           86
+     154743 | Downtown Yorkville Toronto                         | 101.00 | Entire home/apt | Church-Yonge Corridor               | 3.9771428571428571 |           70
+     361557 | Downtown/Stylish 2 Bdr.   Apt /Garden +Parking     |  50.00 | Entire home/apt | South Parkdale                      | 3.9754545454545455 |           66
+     638586 | Toronto Downtown near TIFF &  Convention Centre    | 150.00 | Entire home/apt | Waterfront Communities-The Island   | 3.9733870967741935 |           62
+     817749 | One Bedroom Downtown                               | 102.00 | Entire home/apt | Waterfront Communities-The Island   | 3.9681632653061224 |           49
+     820177 | Modern apartment in leafy, downtown!               | 120.00 | Entire home/apt | Palmerston-Little Italy             | 3.9627272727272727 |           44
+     224775 | Location, Location downtown Toronto /  Lower Rate  |  80.00 | Private room    | Church-Yonge Corridor               | 3.9614634146341463 |           41
+      64641 | Furnished Heritage Rooms Downtown 3                |  49.00 | Private room    | Niagara                             | 3.9407407407407407 |           27
+      62545 | Furnished Heritage Rooms Downtown 1                |  50.00 | Private room    | Niagara                             | 3.9345833333333333 |           24
+     393873 | Sunny, Spacious, Downtown 1 Bedroom                | 115.00 | Entire home/apt | Niagara                             | 3.9295454545454545 |           22
+      64635 | Furnished Heritage Rooms Downtown 2                |  50.00 | Private room    | Niagara                             | 3.9110526315789474 |           19
+      64645 | Furnished Downtown Suite with Private Washroom     |  60.00 | Private room    | Niagara                             | 3.9058823529411765 |           17
+      71118 | Downtown Loft Suite with Private Washroom          |  80.00 | Entire home/apt | Niagara                             | 3.8778571428571429 |           14
+     131401 | Waterfront Luxury Suite 1 Bd - Downtown            |  69.00 | Entire home/apt | Niagara                             | 3.8566666666666667 |           12
+     146601 | Modern 1BR Downtown - Blue Jays Way                | 233.00 | Entire home/apt | Waterfront Communities-The Island   | 3.8177777777777778 |            9
+(20 rows)
+
