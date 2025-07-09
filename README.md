@@ -149,6 +149,34 @@ You should see the application's home page with available features.
    - Navigate to `http://127.0.0.1:5000/delete-all`
    - This removes all listings from the database
 
+
+###  Production Dataset Generation & Loading
+
+1. Raw Data Source
+
+To download the production dataset, go to https://insideairbnb.com/get-the-data/ and search for Toronto. 
+
+- Download the Detailed Listings data from https://data.insideairbnb.com/canada/on/toronto/2025-06-09/data/listings.csv.gz (File name - listings.csv.gz)
+- Download the Reviews.csv file from https://data.insideairbnb.com/canada/on/toronto/2025-06-09/visualisations/reviews.csv (File name - reviews.csv)
+- Download the Neighbourhoods.csv file from https://data.insideairbnb.com/canada/on/toronto/2025-06-09/visualisations/neighbourhoods.csv (File name - neighbourhoods.csv)
+
+2. Transformation & Loading Script
+
+We provide a single ingestion module that reads those three CSVs, parses & validates every field, and bulk-loads into all six tables in the correct order:
+
+# From your repo root:
+python3 scripts/data_ingestion.py
+scripts/data_ingestion.py will:
+
+Check if Host & Listing tables are empty
+Read prod_data/listings.csv, reviews.csv, neighbourhoods.csv
+Parse dates, prices, booleans, percentages
+Insert into Host, Listing, Neighbourhood, ListingAmenity, Review, Availability using ON CONFLICT to avoid duplicates
+
+
+All of the features below have been implemented and tested for production dataset.
+
+
 ### Using Core Features
 
 #### 🔍 Search Listings
@@ -182,7 +210,7 @@ Fill out the form with:
 - Select a listing to modify
 - Update the desired fields
 - Save changes
-
+https://data.insideairbnb.com/canada/on/toronto/2025-05-03/data/listings.csv.gz
 #### 🗑️ Remove Listing
 - Select the listing you want to delete
 - Confirm deletion
