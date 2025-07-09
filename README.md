@@ -164,15 +164,12 @@ To download the production dataset, go to https://insideairbnb.com/get-the-data/
 
 We provide a single ingestion module that reads those three CSVs, parses & validates every field, and bulk-loads into all six tables in the correct order:
 
-# From your repo root:
-python3 scripts/data_ingestion.py
 scripts/data_ingestion.py will:
 
-Check if Host & Listing tables are empty
-Read prod_data/listings.csv, reviews.csv, neighbourhoods.csv
-Parse dates, prices, booleans, percentages
-Insert into Host, Listing, Neighbourhood, ListingAmenity, Review, Availability using ON CONFLICT to avoid duplicates
-
+- Check if Host & Listing tables are empty
+- Read prod_data/listings.csv, reviews.csv, neighbourhoods.csv
+- Parse dates, prices, booleans, percentages
+- Insert into Host, Listing, Neighbourhood, ListingAmenity, Review, Availability using ON CONFLICT to avoid duplicates
 
 All of the features below have been implemented and tested for production dataset.
 
