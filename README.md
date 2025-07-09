@@ -215,38 +215,6 @@ https://data.insideairbnb.com/canada/on/toronto/2025-05-03/data/listings.csv.gz
 #### 🏆 View Top Properties
 - Access the top 3 properties based on price, rating in the home page
 
-## 📁 Project Structure
-
-```
-CS-348-Group-Project-S25/
-├── __pycache__/          # Python cache files
-│   └── db_config.cpython-311.pyc
-├── feature-tests/        # Tests for each SQL feature
-│   ├── test-sample1.sql  # Feature 1
-│   ├── test-sample1.out
-|       ....
-│   ├── test-sample7.sql  # Feature 7
-│   └── test-sample7.out
-├── static/               # Static files (CSS, JS, images)
-│   └── styles.css        # Main stylesheet
-├── templates/            # HTML templates
-│   ├── add_listing.html  # Add new listing page
-│   ├── add_sample.html   # Add sample data page
-│   ├── base.html         # Base template
-│   ├── delete_all.html   # Delete all listings page
-│   ├── delete_listing.html # Delete specific listing page
-│   ├── home.html         # Home page
-│   ├── update_listing.html # Update listing page
-│   └── view_listings.html # View all listings page
-├── .gitignore            # Git ignore file
-├── README.md             # Project documentation
-├── app.py                # Main Flask application
-├── data.sql              # Main SQL DDL queries
-├── db_config.py          # Database configuration
-├── requirements.txt      # Python dependencies
-└── sample.sql            # Sample Dataset
-```
-
 ## 🔧 Troubleshooting
 
 ### Common Issues
