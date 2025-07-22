@@ -7,9 +7,10 @@
       <tr>
         <th>ID</th>
         <th>Title</th>
+        <th>Neighbourhood</th>
+        <th>Minimum Nights</th>
         <th>Price</th>
         <th>Rating</th>
-        <th>Neighbourhood</th>
       </tr>
     </thead>
     <tbody>
@@ -17,9 +18,10 @@
       <tr>
         <td>{{ l.listing_id }}</td>
         <td>{{ l.name }}</td>
+        <td>{{ l.neighbourhood }}</td>
+        <td>{{ l.min_nights }}</td>
         <td>${{ '%.2f'|format(l.price) }}</td>
         <td>{{ '%.2f'|format(l.avg_rating) }}</td>
-        <td>{{ l.neighbourhood }}</td>
       </tr>
       {% endfor %}
       {% if top_listings|length == 0 %}

@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS Listing            CASCADE;
 DROP TABLE IF EXISTS Neighbourhood       CASCADE;
 DROP TABLE IF EXISTS Host               CASCADE;
 
+CREATE EXTENSION IF NOT EXISTS PostGIS;
+
 -- HOST (strong entity)
 CREATE TABLE Host (
   host_id            INTEGER       PRIMARY KEY,
@@ -38,6 +40,8 @@ CREATE TABLE Listing (
   instant_bookable  BOOLEAN,
   created_date      DATE         DEFAULT CURRENT_DATE,
   last_scraped      DATE,
+  geopoint          geography(Point, 4326),
+  -- 4326 indicates to PostGIS that the data should be treated as coordinates on WGS 84 which is the standard for specifying locations in terms of latitude and longitude. 
 
   FOREIGN KEY (host_id) REFERENCES Host(host_id) ON DELETE CASCADE
 );
@@ -93,3 +97,7 @@ CREATE TABLE Availability (
 ALTER TABLE Neighbourhood
 ADD CONSTRAINT valid_latitude CHECK (latitude BETWEEN -90 AND 90),
 ADD CONSTRAINT valid_longitude CHECK (longitude BETWEEN -180 AND 180);
+
+-- Indexes and Optimization
+CREATE INDEX idx_listing_geopoint ON Listing USING GIST (geopoint);
+-- GiST spatial index is created on geopoint column instead of traditional B-tree since B-tree indexes cannot index spatial data but GiST indexes support PostGIS geography type and allows us to perform distance/spatial searches.
