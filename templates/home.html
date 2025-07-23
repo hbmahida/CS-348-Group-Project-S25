@@ -1,7 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="home-header">
 <h1>Welcome to Airbnb Listings Manager</h1>
 <p>Manage your listings using the sidebar. Below are the top 3 properties.</p>
+</div>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Top Properties Section -->
+<div class="top-properties-section">
+    <h2>🏠 Top Properties</h2>
 <table>
     <thead>
       <tr>
@@ -29,4 +46,10 @@
       {% endif %}
     </tbody>
 </table>
+</div>
+
+<div class="analytics-link">
+    <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-primary">📊 View Interactive Analytics Dashboard</a>
+</div>
+
 {% endblock %}
