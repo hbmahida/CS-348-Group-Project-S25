@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="analytics-header">
+    <h1>📊 Interactive Analytics Dashboard</h1>
+    <p>Explore comprehensive insights with interactive charts and filtering capabilities.</p>
+</div>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+{% if analytics %}
+<!-- Market Overview Section -->
+{% if analytics.market_overview %}
+<div class="analytics-section">
+    <h2>📈 Market Overview</h2>
+    <div class="analytics-grid">
+        <div class="metric-card">
+            <h3>{{ analytics.market_overview.total_listings or 0 }}</h3>
+            <p>Total Listings</p>
+        </div>
+        <div class="metric-card">
+            <h3>{{ analytics.market_overview.total_hosts or 0 }}</h3>
+            <p>Total Hosts</p>
+        </div>
+        <div class="metric-card">
+            <h3>{{ analytics.market_overview.total_neighbourhoods or 0 }}</h3>
+            <p>Neighbourhoods</p>
+        </div>
+        <div class="metric-card">
+            <h3>${{ "%.2f"|format(analytics.market_overview.overall_avg_price or 0) }}</h3>
+            <p>Average Price</p>
+        </div>
+        <div class="metric-card">
+            <h3>{{ "%.2f"|format(analytics.market_overview.overall_avg_rating or 0) }}</h3>
+            <p>Average Rating</p>
+        </div>
+        <div class="metric-card">
+            <h3>{{ analytics.market_overview.total_reviews or 0 }}</h3>
+            <p>Total Reviews</p>
+        </div>
+        <div class="metric-card">
+            <h3>{{ analytics.market_overview.superhost_count or 0 }}</h3>
+            <p>Superhosts</p>
+        </div>
+        <div class="metric-card">
+            <h3>{{ analytics.market_overview.instant_bookable_count or 0 }}</h3>
+            <p>Instant Bookable</p>
+        </div>
+    </div>
+    
+    <!-- Market Composition -->
+    <div class="market-composition">
+        <h3>🏠 Market Composition</h3>
+        <div class="composition-grid">
+            <div class="composition-item">
+                <span class="composition-label">Entire Home/Apt:</span>
+                <span class="composition-value">{{ analytics.market_overview.entire_home_count or 0 }}</span>
+            </div>
+            <div class="composition-item">
+                <span class="composition-label">Private Room:</span>
+                <span class="composition-value">{{ analytics.market_overview.private_room_count or 0 }}</span>
+            </div>
+            <div class="composition-item">
+                <span class="composition-label">Shared Room:</span>
+                <span class="composition-value">{{ analytics.market_overview.shared_room_count or 0 }}</span>
+            </div>
+            <div class="composition-item">
+                <span class="composition-label">Hotel Room:</span>
+                <span class="composition-value">{{ analytics.market_overview.hotel_room_count or 0 }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Interactive Charts Section -->
+<div class="analytics-section">
+    <h2>📊 Interactive Data Visualization</h2>
+    
+    <!-- Filter Selection -->
+    <div class="chart-filter-section">
+        <h3>Select Analytics Category:</h3>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="host-performance">
+                🏆 Host Performance
+            </button>
+            <button class="filter-btn" data-filter="price-trends">
+                💰 Price Trends
+            </button>
+            <button class="filter-btn" data-filter="neighbourhood">
+                🏘️ Neighbourhood Analytics
+            </button>
+        </div>
+    </div>
+    
+    <!-- Chart Container -->
+    <div class="chart-container">
+        <div class="chart-loading" id="chart-loading">
+            <div class="spinner"></div>
+            <p>Loading interactive charts...</p>
+        </div>
+        
+        <!-- Host Performance Charts -->
+        <div class="chart-section" id="host-performance-charts">
+            <div class="chart-grid">
+                <div class="chart-item">
+                    <h4>Host Performance Distribution</h4>
+                    <div id="host-performance-pie"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Top Hosts by Average Rating</h4>
+                    <div id="host-rating-bar"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Host Price vs Rating Analysis</h4>
+                    <div id="host-price-scatter"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Host Listings Distribution</h4>
+                    <div id="host-listings-histogram"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Price Trends Charts -->
+        <div class="chart-section" id="price-trends-charts" style="display: none;">
+            <div class="chart-grid">
+                <div class="chart-item">
+                    <h4>Average Price by Room Type</h4>
+                    <div id="price-room-type-bar"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Price Distribution by Room Type</h4>
+                    <div id="price-distribution-box"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Listing Count by Room Type</h4>
+                    <div id="room-type-pie"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Price vs Rating by Room Type</h4>
+                    <div id="price-rating-scatter"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Neighbourhood Analytics Charts -->
+        <div class="chart-section" id="neighbourhood-charts" style="display: none;">
+            <div class="chart-grid">
+                <div class="chart-item">
+                    <h4>Top Neighbourhoods by Average Price</h4>
+                    <div id="neighbourhood-price-bar"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Price Categories Distribution</h4>
+                    <div id="price-category-pie"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Neighbourhood Price vs Rating</h4>
+                    <div id="neighbourhood-scatter"></div>
+                </div>
+                <div class="chart-item">
+                    <h4>Listings Count by Neighbourhood</h4>
+                    <div id="neighbourhood-listings-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="no-data">
+    <h2>No Analytics Data Available</h2>
+    <p>Please ensure your database has listings and reviews to generate analytics.</p>
+    <a href="{{ url_for('refresh_analytics') }}" class="btn btn-primary">Refresh Analytics</a>
+</div>
+{% endif %}
+
+<!-- Navigation -->
+<div class="analytics-navigation">
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">← Back to Home</a>
+    <a href="{{ url_for('refresh_analytics') }}" class="btn btn-primary">🔄 Refresh Analytics</a>
+</div>
+
+<!-- Load Plotly -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- Chart Generation Script -->
+<script>
+// Global variables
+let currentFilter = 'host-performance';
+let chartData = {};
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    setupFilterButtons();
+    loadChartData();
+});
+
+// Setup filter button functionality
+function setupFilterButtons() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Get filter type
+            const filterType = this.getAttribute('data-filter');
+            currentFilter = filterType;
+            
+            // Show/hide appropriate chart sections
+            showChartSection(filterType);
+            
+            // Generate charts for the selected filter
+            generateCharts(filterType);
+        });
+    });
+}
+
+// Show appropriate chart section
+function showChartSection(filterType) {
+    const sections = ['host-performance-charts', 'price-trends-charts', 'neighbourhood-charts'];
+    
+    sections.forEach(section => {
+        const element = document.getElementById(section);
+        if (element) {
+            element.style.display = 'none';
+        }
+    });
+    
+    const targetSection = document.getElementById(filterType + '-charts');
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+}
+
+// Load chart data from API
+async function loadChartData() {
+    try {
+        showLoading(true);
+        
+        // Load all data in parallel
+        const [hostData, priceData, neighbourhoodData] = await Promise.all([
+            fetch('/api/analytics/host-performance').then(r => r.json()),
+            fetch('/api/analytics/price-trends').then(r => r.json()),
+            fetch('/api/analytics/neighbourhood').then(r => r.json())
+        ]);
+        
+        chartData = {
+            'host-performance': hostData,
+            'price-trends': priceData,
+            'neighbourhood': neighbourhoodData
+        };
+        
+        // Generate initial charts
+        generateCharts(currentFilter);
+        showLoading(false);
+        
+    } catch (error) {
+        console.error('Error loading chart data:', error);
+        showLoading(false);
+        showError('Failed to load chart data. Please try refreshing the page.');
+    }
+}
+
+// Show/hide loading spinner
+function showLoading(show) {
+    const loading = document.getElementById('chart-loading');
+    if (loading) {
+        loading.style.display = show ? 'flex' : 'none';
+    }
+}
+
+// Show error message
+function showError(message) {
+    const container = document.querySelector('.chart-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="error-message">
+                <h3>Error</h3>
+                <p>${message}</p>
+                <button onclick="window.location.reload()" class="btn btn-primary">Try Again</button>
+            </div>
+        `;
+    }
+}
+
+// Generate charts based on filter type
+function generateCharts(filterType) {
+    const data = chartData[filterType];
+    if (!data || !Array.isArray(data)) {
+        console.error('No data available for', filterType);
+        return;
+    }
+    
+    switch(filterType) {
+        case 'host-performance':
+            generateHostPerformanceCharts(data);
+            break;
+        case 'price-trends':
+            generatePriceTrendsCharts(data);
+            break;
+        case 'neighbourhood':
+            generateNeighbourhoodCharts(data);
+            break;
+    }
+}
+
+// Generate host performance charts
+function generateHostPerformanceCharts(data) {
+    // Performance tier pie chart
+    const performanceTiers = {};
+    data.forEach(host => {
+        const tier = host.performance_tier || 'Unknown';
+        performanceTiers[tier] = (performanceTiers[tier] || 0) + 1;
+    });
+    
+    Plotly.newPlot('host-performance-pie', [{
+        values: Object.values(performanceTiers),
+        labels: Object.keys(performanceTiers),
+        type: 'pie',
+        marker: {
+            colors: ['#28a745', '#20c997', '#17a2b8', '#ffc107', '#dc3545']
+        }
+    }], {
+        font: { size: 14 },
+        margin: { l: 60, r: 60, t: 60, b: 60 }
+    });
+    
+    // Top hosts by rating bar chart
+    const topHosts = data.slice(0, 15);
+    Plotly.newPlot('host-rating-bar', [{
+        x: topHosts.map(h => h.avg_rating),
+        y: topHosts.map(h => h.host_name),
+        type: 'bar',
+        orientation: 'h',
+        marker: { color: '#007bff' }
+    }], {
+        xaxis: { title: 'Average Rating', automargin: true },
+        yaxis: { title: 'Host Name', automargin: true },
+        font: { size: 12 },
+        margin: { l: 150, r: 60, t: 60, b: 80 }
+    });
+    
+    // Price vs rating scatter plot
+    Plotly.newPlot('host-price-scatter', [{
+        x: data.map(h => h.avg_rating),
+        y: data.map(h => h.avg_listing_price),
+        text: data.map(h => h.host_name),
+        mode: 'markers',
+        type: 'scatter',
+        marker: {
+            size: data.map(h => Math.sqrt(h.total_listings) * 5),
+            color: data.map(h => h.total_reviews),
+            colorscale: 'Viridis',
+            showscale: true,
+            colorbar: { title: 'Total Reviews' }
+        }
+    }], {
+        xaxis: { title: 'Average Rating', automargin: true },
+        yaxis: { title: 'Average Price ($)', automargin: true },
+        font: { size: 12 },
+        margin: { l: 80, r: 100, t: 60, b: 80 }
+    });
+    
+    // Host listings histogram
+    Plotly.newPlot('host-listings-histogram', [{
+        x: data.map(h => h.total_listings),
+        type: 'histogram',
+        marker: { color: '#007bff' },
+        nbinsx: 20
+    }], {
+        xaxis: { title: 'Number of Listings', automargin: true },
+        yaxis: { title: 'Number of Hosts', automargin: true },
+        font: { size: 12 },
+        margin: { l: 80, r: 60, t: 60, b: 80 }
+    });
+}
+
+// Generate price trends charts
+function generatePriceTrendsCharts(data) {
+    // Average price by room type bar chart
+    Plotly.newPlot('price-room-type-bar', [{
+        x: data.map(d => d.room_type),
+        y: data.map(d => d.avg_price),
+        type: 'bar',
+        marker: { color: '#007bff' }
+    }], {
+        xaxis: { title: 'Room Type', automargin: true },
+        yaxis: { title: 'Average Price ($)', automargin: true },
+        font: { size: 12 },
+        margin: { l: 80, r: 60, t: 60, b: 100 }
+    });
+    
+    // Price distribution box plot
+    const boxData = data.map(d => ({
+        y: [d.min_price, d.avg_price - (d.avg_price - d.min_price)/2, d.avg_price, d.avg_price + (d.max_price - d.avg_price)/2, d.max_price],
+        name: d.room_type,
+        type: 'box'
+    }));
+    
+    Plotly.newPlot('price-distribution-box', boxData, {
+        yaxis: { title: 'Price ($)', automargin: true },
+        xaxis: { automargin: true },
+        font: { size: 12 },
+        margin: { l: 80, r: 60, t: 60, b: 100 }
+    });
+    
+    // Room type pie chart
+    Plotly.newPlot('room-type-pie', [{
+        values: data.map(d => d.listing_count),
+        labels: data.map(d => d.room_type),
+        type: 'pie',
+        marker: {
+            colors: ['#007bff', '#28a745', '#ffc107', '#dc3545']
+        }
+    }], {
+        font: { size: 14 },
+        margin: { l: 60, r: 60, t: 60, b: 60 }
+    });
+    
+    // Price vs rating scatter plot
+    Plotly.newPlot('price-rating-scatter', [{
+        x: data.map(d => d.avg_rating),
+        y: data.map(d => d.avg_price),
+        text: data.map(d => d.room_type),
+        mode: 'markers',
+        type: 'scatter',
+        marker: {
+            size: data.map(d => Math.sqrt(d.listing_count) * 2),
+            color: data.map(d => d.total_reviews),
+            colorscale: 'Viridis',
+            showscale: true,
+            colorbar: { title: 'Total Reviews' }
+        }
+    }], {
+        xaxis: { title: 'Average Rating', automargin: true },
+        yaxis: { title: 'Average Price ($)', automargin: true },
+        font: { size: 12 },
+        margin: { l: 80, r: 100, t: 60, b: 80 }
+    });
+}
+
+// Generate neighbourhood charts
+function generateNeighbourhoodCharts(data) {
+    // Top neighbourhoods by price
+    const topNeighbourhoods = data.slice(0, 15);
+    Plotly.newPlot('neighbourhood-price-bar', [{
+        x: topNeighbourhoods.map(n => n.avg_price),
+        y: topNeighbourhoods.map(n => n.neighbourhood_name),
+        type: 'bar',
+        orientation: 'h',
+        marker: { color: '#007bff' }
+    }], {
+        xaxis: { title: 'Average Price ($)', automargin: true },
+        yaxis: { title: 'Neighbourhood', automargin: true },
+        font: { size: 12 },
+        margin: { l: 200, r: 60, t: 60, b: 80 }
+    });
+    
+    // Price categories pie chart
+    const priceCategories = {};
+    data.forEach(n => {
+        const category = n.price_category || 'Unknown';
+        priceCategories[category] = (priceCategories[category] || 0) + 1;
+    });
+    
+    Plotly.newPlot('price-category-pie', [{
+        values: Object.values(priceCategories),
+        labels: Object.keys(priceCategories),
+        type: 'pie',
+        marker: {
+            colors: ['#6f42c1', '#fd7e14', '#20c997', '#28a745']
+        }
+    }], {
+        font: { size: 14 },
+        margin: { l: 60, r: 60, t: 60, b: 60 }
+    });
+    
+    // Neighbourhood price vs rating scatter
+    Plotly.newPlot('neighbourhood-scatter', [{
+        x: data.map(n => n.avg_rating),
+        y: data.map(n => n.avg_price),
+        text: data.map(n => n.neighbourhood_name),
+        mode: 'markers',
+        type: 'scatter',
+        marker: {
+            size: data.map(n => Math.sqrt(n.total_listings) * 3),
+            color: data.map(n => n.total_reviews),
+            colorscale: 'Viridis',
+            showscale: true,
+            colorbar: { title: 'Total Reviews' }
+        }
+    }], {
+        xaxis: { title: 'Average Rating', automargin: true },
+        yaxis: { title: 'Average Price ($)', automargin: true },
+        font: { size: 12 },
+        margin: { l: 80, r: 100, t: 60, b: 80 }
+    });
+    
+    // Listings count by neighbourhood
+    const topListings = data.slice(0, 15);
+    Plotly.newPlot('neighbourhood-listings-bar', [{
+        x: topListings.map(n => n.neighbourhood_name),
+        y: topListings.map(n => n.total_listings),
+        type: 'bar',
+        marker: { color: '#007bff' }
+    }], {
+        xaxis: { title: 'Neighbourhood', automargin: true },
+        yaxis: { title: 'Number of Listings', automargin: true },
+        font: { size: 12 },
+        margin: { l: 80, r: 60, t: 60, b: 120 }
+    });
+}
+</script>
+
+{% endblock %} 

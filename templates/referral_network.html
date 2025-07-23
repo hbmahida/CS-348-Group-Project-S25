@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-content">
+    <h1>Brokerage Firm Network Analysis</h1>
+    
+    <!-- Simple Filter Form -->
+    <form method="get" action="{{ url_for('referral_network') }}" class="filter-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="root_host_id">Select Brokerage Firm Head:</label>
+                <select name="root_host_id" id="root_host_id" class="form-control">
+                    <option value="">Choose a brokerage firm root...</option>
+                    {% for host in all_hosts %}
+                        <option value="{{ host[0] }}" {% if host[0] == selected_host %}selected{% endif %}>
+                            {{ host[1] }} (ID: {{ host[0] }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Analyze Network</button>
+            </div>
+        </div>
+    </form>
+
+    {% if network_summary %}
+    <!-- Brokerage Firm Summary -->
+    <div class="network-summary">
+        <h2>Brokerage Firm Performance Summary</h2>
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>{{ network_summary.total_agents }}</h3>
+                <p>Total Agents in Firm</p>
+            </div>
+            <div class="summary-card">
+                <h3>${{ "{:,.2f}".format(network_summary.estimated_revenue) }}</h3>
+                <p>Total Monthly Revenue</p>
+            </div>
+            <div class="summary-card">
+                <h3>{{ network_summary.superhosts }}</h3>
+                <p>Superhosts</p>
+            </div>
+            <div class="summary-card">
+                <h3>{{ network_summary.total_listings }}</h3>
+                <p>Total Properties</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if network_data %}
+        <!-- Brokerage Firm Data Table -->
+    <div class="table-container">
+        <h2>Brokerage Firm Agent Details</h2>
+        <p>Total agents in firm: {{ network_data|length }}</p>
+        
+        <table class="network-table">
+            <thead>
+                <tr>
+                    <th style="background-color: #007bff;">Level</th>
+                    <th style="background-color: #007bff;">Agent Name</th>
+                    <th style="background-color: #007bff;">Reporting Chain</th>
+                    <th style="background-color: #007bff;">Superhost</th>
+                    <th style="background-color: #007bff;">Avg Price</th>
+                    <th style="background-color: #007bff;">Properties</th>
+                    <th style="background-color: #007bff;">Monthly Revenue</th>
+                    <th style="background-color: #007bff;">Revenue %</th>
+                    <th style="background-color: #007bff; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+             <tbody>
+                 {% for row in network_data %}
+                                 <tr class="level-{{ row[0] }}">
+                    <td>{{ row[0] }}</td>
+                    <td>
+                        <strong>{{ row[2] }}</strong>
+                        {% if row[5] %}
+                            <span class="superhost-badge">★</span>
+                        {% endif %}
+                    </td>
+                    <td class="referral-path">{{ row[3] }}</td>
+                    <td>
+                        {% if row[5] %}
+                            <span class="status-badge status-yes">Yes</span>
+                        {% else %}
+                            <span class="status-badge status-no">No</span>
+                        {% endif %}
+                    </td>
+                    <td>${{ "{:.2f}".format(row[7]) }}</td>
+                    <td>{{ row[8] }}</td>
+                    <td>${{ "{:,.2f}".format(row[9]) }}</td>
+                    <td>{{ row[10] }}%</td>
+                    <td style="text-align: center;">
+                        <div class="action-buttons">
+                            <a href="{{ url_for('host_details', host_id=row[1]) }}" 
+                               target="_blank" 
+                               class="btn-details" 
+                               title="View detailed host information">
+                                📊 Details
+                            </a>
+                            <a href="{{ url_for('add_host_referral', host_id=row[1]) }}" 
+                               class="btn-edit" 
+                               title="Edit agent information">
+                                ✏️ Edit
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                 {% endfor %}
+             </tbody>
+         </table>
+    </div>
+         {% endif %}
+</div>
+
+<style>
+    .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 16px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .network-summary {
+        margin-bottom: 30px;
+    }
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    .summary-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .summary-card h3 {
+        margin: 0 0 5px 0;
+        color: #007bff;
+        font-size: 1.8em;
+    }
+    .summary-card p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+    }
+    .filter-form {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .form-row {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .form-group {
+        flex: 1;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #495057;
+    }
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .table-container {
+        margin-bottom: 30px;
+    }
+    .network-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    .network-table th,
+    .network-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .network-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+    }
+    .network-table tr:hover {
+        background-color: #f8f9fa;
+    }
+    .level-0 {
+        background-color: #e3f2fd;
+    }
+    .level-1 {
+        background-color: #f3e5f5;
+    }
+    .level-2 {
+        background-color: #e8f5e8;
+    }
+    .level-3 {
+        background-color: #fff3e0;
+    }
+    .level-4 {
+        background-color: #fce4ec;
+    }
+    .referral-path {
+        font-family: monospace;
+        font-size: 0.9em;
+        max-width: 300px;
+        word-wrap: break-word;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+    .btn-details, .btn-edit {
+        padding: 6px 12px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: bold;
+        transition: all 0.2s ease;
+        display: inline-block;
+        text-align: center;
+        min-width: 70px;
+    }
+    .btn-details {
+        background-color: #17a2b8;
+        color: white;
+        border: 1px solid #17a2b8;
+    }
+    .btn-details:hover {
+        background-color: #138496;
+        color: white;
+        text-decoration: none;
+    }
+    .btn-edit {
+        background-color: #ffc107;
+        color: #212529;
+        border: 1px solid #ffc107;
+    }
+    .btn-edit:hover {
+        background-color: #e0a800;
+        color: #212529;
+        text-decoration: none;
+    }
+    .superhost-badge {
+        color: #ff6b6b;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+    .status-badge {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        font-weight: bold;
+    }
+    .status-badge.status-yes {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .status-badge.status-no {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %} 

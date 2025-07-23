@@ -1,0 +1,16 @@
+network_level|host_id|host_name|referral_path|host_since|is_superhost|host_listings_count|avg_listing_price|total_listings|avg_rating|total_reviews
+0|1|John Smith|John Smith|2020-01-15|t|3|148.33|3|4.5|3
+1|2|Maria Garcia|John Smith -> Maria Garcia|2019-06-20|f|2|155.00|2|4.55|3
+1|3|David Chen|John Smith -> David Chen|2021-03-10|t|1|175.00|3|4.90|1
+2|4|Sarah Johnson|John Smith -> Maria Garcia -> Sarah Johnson|2018-11-05|f|2|390.00|2|4.80|3
+2|5|Michael Brown|John Smith -> David Chen -> Michael Brown|2022-08-18|f|1|196.67|3|4.50|3
+
+total_network_hosts|max_network_depth|estimated_monthly_network_revenue|network_avg_rating|superhost_count|total_network_listings
+5|2|67980.00|4.65|2|14
+
+host_id|host_name|referred_by|referrer_name
+1|John Smith||
+2|Maria Garcia|1|John Smith
+3|David Chen|1|John Smith
+4|Sarah Johnson|2|Maria Garcia
+5|Michael Brown|3|David Chen 
