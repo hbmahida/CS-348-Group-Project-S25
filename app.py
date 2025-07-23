@@ -1,5 +1,4 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
-from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
 import psycopg2
 from psycopg2 import errors, IntegrityError
 from db_config import DB_CONFIG
@@ -26,26 +25,12 @@ def get_db_connection():
 # Initializes the database schema from data.sql.
 def init_db():
     conn = get_db_connection()
-    cur  = conn.cursor()
-
+    cur = conn.cursor()
     with open('data.sql', 'r') as f:
         ddl_script = f.read()
-
-    # 1) Remove any pure-single-line comments
-    lines = ddl_script.splitlines()
-    non_comment = [
-        line for line in lines
-        if not line.strip().startswith('--')
-    ]
-    cleaned = "\n".join(non_comment)
-
-    # 2) Split on semicolons and execute each non-empty statement
-    for stmt in cleaned.split(';'):
-        sql = stmt.strip()
-        if not sql:
-            continue
-        cur.execute(sql)
-
+    
+    # Execute the entire script at once to handle dollar-quoted strings properly
+    cur.execute(ddl_script)
     conn.commit()
     cur.close()
     conn.close()
