@@ -383,3 +383,588 @@ body {
 .theme-toggle:focus {
   outline: 2px solid #007bff;
 }
+
+/* ==============================
+   ANALYTICS DASHBOARD STYLES
+   ============================== */
+
+/* Analytics Section Styling */
+.analytics-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--panel-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.analytics-section h2 {
+    color: var(--fg-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+}
+
+.analytics-section h3 {
+    color: var(--fg-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+/* Analytics Grid for Metric Cards */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+}
+
+.metric-card h3 {
+    font-size: 2rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.metric-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Market Composition */
+.market-composition {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--bg-color);
+    border-radius: 6px;
+}
+
+.composition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.composition-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: var(--panel-bg);
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+}
+
+.composition-label {
+    font-weight: 500;
+    color: var(--fg-color);
+}
+
+.composition-value {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Analytics Tables */
+.analytics-table-section {
+    margin-top: 1rem;
+}
+
+.analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: var(--panel-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.analytics-table th {
+    background-color: #007bff;
+    color: white;
+    padding: 1rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.analytics-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+    color: var(--fg-color);
+    font-size: 0.9rem;
+}
+
+.analytics-table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.analytics-table tbody tr:nth-child(even) {
+    background-color: rgba(0, 123, 255, 0.02);
+}
+
+/* Badge Styling */
+.superhost-badge {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.performance-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.performance-excellent {
+    background-color: #28a745;
+    color: white;
+}
+
+.performance-very-good {
+    background-color: #20c997;
+    color: white;
+}
+
+.performance-good {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.performance-fair {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.performance-poor {
+    background-color: #dc3545;
+    color: white;
+}
+
+.price-category {
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.price-premium {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.price-high {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.price-medium {
+    background-color: #20c997;
+    color: white;
+}
+
+.price-budget {
+    background-color: #28a745;
+    color: white;
+}
+
+.price-position {
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.price-above-market {
+    background-color: #dc3545;
+    color: white;
+}
+
+.price-market-rate {
+    background-color: #28a745;
+    color: white;
+}
+
+.price-below-market {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Top Properties Section */
+.top-properties-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: var(--panel-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.top-properties-section h2 {
+    color: var(--fg-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+}
+
+/* Analytics Navigation */
+.analytics-navigation {
+    margin-top: 2rem;
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #e9ecef;
+}
+
+.analytics-navigation .btn {
+    margin: 0 0.5rem;
+}
+
+.analytics-link {
+    margin-top: 2rem;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* No Data State */
+.no-data {
+    text-align: center;
+    padding: 3rem;
+    color: var(--fg-color);
+}
+
+.no-data h2 {
+    color: var(--fg-color);
+    margin-bottom: 1rem;
+}
+
+.no-data p {
+    margin-bottom: 2rem;
+    color: var(--fg-color);
+    opacity: 0.8;
+}
+
+/* Home Header */
+.home-header {
+    margin-bottom: 2rem;
+}
+
+.home-header h1 {
+    color: var(--fg-color);
+    margin-bottom: 0.5rem;
+}
+
+.home-header p {
+    color: var(--fg-color);
+    opacity: 0.8;
+}
+
+/* Analytics Header */
+.analytics-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.analytics-header h1 {
+    color: var(--fg-color);
+    margin-bottom: 0.5rem;
+}
+
+.analytics-header p {
+    color: var(--fg-color);
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .composition-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analytics-table {
+        font-size: 0.8rem;
+    }
+    
+    .analytics-table th,
+    .analytics-table td {
+        padding: 0.5rem;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
+    
+    .metric-card h3 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .analytics-table-section {
+        overflow-x: auto;
+    }
+    
+    .analytics-table {
+        min-width: 600px;
+    }
+    
+    .analytics-navigation .btn {
+        display: block;
+        margin: 0.5rem 0;
+        width: 100%;
+    }
+}
+
+/* ==============================
+   INTERACTIVE DASHBOARD STYLES
+   ============================== */
+
+/* Filter Section */
+.chart-filter-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.chart-filter-section h3 {
+    margin-bottom: 1rem;
+    color: var(--fg-color);
+    font-size: 1.2rem;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #007bff;
+    background-color: transparent;
+    color: #007bff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-btn:hover {
+    background-color: #007bff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.filter-btn.active {
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.filter-btn.active:hover {
+    background-color: #0056b3;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    min-height: 400px;
+    background-color: var(--panel-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Loading Spinner */
+.chart-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--panel-bg);
+    z-index: 100;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.chart-loading p {
+    color: var(--fg-color);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Chart Section */
+.chart-section {
+    padding: 2rem;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.chart-item {
+    background-color: var(--panel-bg);
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chart-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.chart-item h4 {
+    margin: 0 0 1rem 0;
+    color: var(--fg-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #007bff;
+}
+
+.chart-item > div {
+    min-height: 400px;
+}
+
+/* Error Message */
+.error-message {
+    text-align: center;
+    padding: 3rem;
+    color: var(--fg-color);
+}
+
+.error-message h3 {
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.error-message p {
+    margin-bottom: 2rem;
+    color: var(--fg-color);
+    opacity: 0.8;
+}
+
+/* Chart Responsive Adjustments */
+@media (max-width: 768px) {
+    .filter-buttons {
+        flex-direction: column;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Chart grid is already single column by default */
+    
+    .chart-item {
+        padding: 1rem;
+    }
+    
+    .chart-section {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-filter-section {
+        padding: 1rem;
+    }
+    
+    .chart-item h4 {
+        font-size: 1rem;
+    }
+    
+    .chart-item > div {
+        min-height: 250px;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Plotly chart customizations */
+.plotly-graph-div {
+    margin: 0 !important;
+}
+
+.plotly-graph-div .plotly {
+    background-color: var(--panel-bg) !important;
+}
+
+/* Dark mode adjustments for charts */
+.dark-theme .plotly-graph-div .plotly {
+    background-color: var(--panel-bg) !important;
+    color: var(--fg-color) !important;
+}
+
+.dark-theme .chart-item {
+    background-color: var(--panel-bg);
+    border-color: #495057;
+}
+
+.dark-theme .chart-filter-section {
+    background-color: var(--panel-bg);
+    border-color: #495057;
+}

@@ -1,0 +1,769 @@
+{% extends "base.html" %}
+
+{% block title %}Listing Recommendations - Airbnb Database Manager{% endblock %}
+
+{% block content %}
+<div class="recommendations-container">
+    <header class="recommendations-header">
+        <h1>🎯 Intelligent Listing Recommendations</h1>
+        <p>Find similar listings using advanced recursive analysis and machine learning similarity scoring</p>
+    </header>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <h2>🔍 Search for a Listing</h2>
+        <div class="search-input-container">
+            <input type="text" id="searchInput" placeholder="Search by listing name or description..." />
+            <button id="searchBtn">Search</button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <!-- Selected Listing Section -->
+    <div id="selectedListingSection" class="selected-listing-section" style="display: none;">
+        <h2>📍 Selected Listing</h2>
+        <div id="selectedListing" class="selected-listing-card"></div>
+    </div>
+
+    <!-- Similarity Controls Section -->
+    <div id="similarityControls" class="similarity-controls" style="display: none;">
+        <h2>⚙️ Similarity Factors</h2>
+        <p>Adjust the importance of different factors in finding similar listings:</p>
+        
+        <div class="weight-controls">
+            <div class="weight-item">
+                <label for="priceWeight">💰 Price Similarity</label>
+                <input type="range" id="priceWeight" min="0" max="1" step="0.1" value="0.3" />
+                <span id="priceWeightValue">0.3</span>
+            </div>
+            
+            <div class="weight-item">
+                <label for="locationWeight">📍 Location Proximity</label>
+                <input type="range" id="locationWeight" min="0" max="1" step="0.1" value="0.25" />
+                <span id="locationWeightValue">0.25</span>
+            </div>
+            
+            <div class="weight-item">
+                <label for="amenityWeight">🏠 Amenity Similarity</label>
+                <input type="range" id="amenityWeight" min="0" max="1" step="0.1" value="0.25" />
+                <span id="amenityWeightValue">0.25</span>
+            </div>
+            
+            <div class="weight-item">
+                <label for="hostWeight">👤 Host Quality</label>
+                <input type="range" id="hostWeight" min="0" max="1" step="0.1" value="0.1" />
+                <span id="hostWeightValue">0.1</span>
+            </div>
+            
+            <div class="weight-item">
+                <label for="ratingWeight">⭐ Rating Similarity</label>
+                <input type="range" id="ratingWeight" min="0" max="1" step="0.1" value="0.1" />
+                <span id="ratingWeightValue">0.1</span>
+            </div>
+        </div>
+        
+        <div class="weight-total">
+            <strong>Total Weight: <span id="totalWeight">1.0</span></strong>
+            <button id="updateWeightsBtn">Update Weights</button>
+        </div>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div id="recommendationsSection" class="recommendations-section" style="display: none;">
+        <h2>🎯 Recommended Similar Listings</h2>
+        <div class="recommendations-controls">
+            <label for="maxResults">Max Results:</label>
+            <select id="maxResults">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+            
+            <label for="minSimilarity">Min Similarity:</label>
+            <select id="minSimilarity">
+                <option value="0.4">40%</option>
+                <option value="0.5">50%</option>
+                <option value="0.6" selected>60%</option>
+                <option value="0.7">70%</option>
+                <option value="0.8">80%</option>
+            </select>
+            
+            <button id="refreshRecommendations">Refresh Recommendations</button>
+        </div>
+        
+        <div id="recommendationsList" class="recommendations-list"></div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+        <div class="spinner"></div>
+        <p>Analyzing similarities...</p>
+    </div>
+</div>
+
+<style>
+.recommendations-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.recommendations-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.recommendations-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.recommendations-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.search-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.search-input-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.search-input-container input {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.search-input-container input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.search-input-container button {
+    padding: 1rem 2rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-input-container button:hover {
+    background: #5a6fd8;
+}
+
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    display: none;
+}
+
+.search-result-item {
+    padding: 1rem;
+    border-bottom: 1px solid #e1e5e9;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-result-item:hover {
+    background: #f8f9fa;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.search-result-item p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.selected-listing-section,
+.similarity-controls,
+.recommendations-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.selected-listing-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.selected-listing-card h3 {
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.selected-listing-card .listing-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.selected-listing-card .detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+}
+
+.weight-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.weight-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.weight-item label {
+    min-width: 150px;
+    font-weight: 500;
+}
+
+.weight-item input[type="range"] {
+    flex: 1;
+}
+
+.weight-item span {
+    min-width: 40px;
+    text-align: center;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.weight-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.weight-total button {
+    padding: 0.5rem 1rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.weight-total button:hover {
+    background: #218838;
+}
+
+.recommendations-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.recommendations-controls label {
+    font-weight: 500;
+}
+
+.recommendations-controls select {
+    padding: 0.5rem;
+    border: 1px solid #e1e5e9;
+    border-radius: 4px;
+}
+
+.recommendations-controls button {
+    padding: 0.5rem 1rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.recommendations-controls button:hover {
+    background: #5a6fd8;
+}
+
+.recommendations-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.recommendation-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e1e5e9;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.recommendation-card h4 {
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.similarity-score {
+    background: #667eea;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.similarity-breakdown {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e1e5e9;
+}
+
+.similarity-breakdown h5 {
+    margin: 0 0 0.5rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.similarity-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.similarity-bar-fill {
+    flex: 1;
+    height: 6px;
+    background: #e1e5e9;
+    border-radius: 3px;
+    margin: 0 0.5rem;
+    position: relative;
+}
+
+.similarity-bar-fill::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #667eea;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 3rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e1e5e9;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .recommendations-container {
+        padding: 1rem;
+    }
+    
+    .recommendations-header h1 {
+        font-size: 2rem;
+    }
+    
+    .search-input-container {
+        flex-direction: column;
+    }
+    
+    .weight-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .recommendations-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .recommendations-list {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+let currentListingId = null;
+let currentWeights = {
+    price: 0.3,
+    location: 0.25,
+    amenity: 0.25,
+    host: 0.1,
+    rating: 0.1
+};
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEventListeners();
+    loadCurrentWeights();
+});
+
+function initializeEventListeners() {
+    // Search functionality
+    document.getElementById('searchBtn').addEventListener('click', performSearch);
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+    
+    // Weight controls
+    const weightInputs = document.querySelectorAll('input[type="range"]');
+    weightInputs.forEach(input => {
+        input.addEventListener('input', updateWeightDisplay);
+    });
+    
+    document.getElementById('updateWeightsBtn').addEventListener('click', updateWeights);
+    document.getElementById('refreshRecommendations').addEventListener('click', refreshRecommendations);
+    
+    // Max results and similarity controls
+    document.getElementById('maxResults').addEventListener('change', refreshRecommendations);
+    document.getElementById('minSimilarity').addEventListener('change', refreshRecommendations);
+}
+
+async function performSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`/api/recommendations/search?q=${encodeURIComponent(query)}`);
+        const results = await response.json();
+        
+        displaySearchResults(results);
+    } catch (error) {
+        console.error('Search error:', error);
+        alert('Error searching listings. Please try again.');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function displaySearchResults(results) {
+    const resultsContainer = document.getElementById('searchResults');
+    
+    if (results.length === 0) {
+        resultsContainer.innerHTML = '<p style="padding: 1rem;">No listings found.</p>';
+        resultsContainer.style.display = 'block';
+        return;
+    }
+    
+    resultsContainer.innerHTML = results.map(listing => `
+        <div class="search-result-item" onclick="selectListing(${listing.listing_id})">
+            <h4>${listing.name}</h4>
+            <p>💰 $${listing.price}/night • 🏠 ${listing.room_type} • 📍 ${listing.neighbourhood_name || 'Unknown'}</p>
+            <p>⭐ ${parseFloat(listing.avg_rating).toFixed(1)} (${listing.review_count} reviews)</p>
+        </div>
+    `).join('');
+    
+    resultsContainer.style.display = 'block';
+}
+
+async function selectListing(listingId) {
+    currentListingId = listingId;
+    
+    try {
+        const response = await fetch(`/api/recommendations/listing/${listingId}`);
+        const listing = await response.json();
+        
+        displaySelectedListing(listing);
+        document.getElementById('selectedListingSection').style.display = 'block';
+        document.getElementById('similarityControls').style.display = 'block';
+        
+        // Hide search results
+        document.getElementById('searchResults').style.display = 'none';
+        
+        // Load recommendations
+        loadRecommendations();
+        
+    } catch (error) {
+        console.error('Error loading listing details:', error);
+        alert('Error loading listing details. Please try again.');
+    }
+}
+
+function displaySelectedListing(listing) {
+    const container = document.getElementById('selectedListing');
+    
+    container.innerHTML = `
+        <h3>${listing.name}</h3>
+        <div class="listing-details">
+            <div class="detail-item">
+                <span>💰 Price:</span>
+                <span>$${listing.price}/night</span>
+            </div>
+            <div class="detail-item">
+                <span>🏠 Room Type:</span>
+                <span>${listing.room_type}</span>
+            </div>
+            <div class="detail-item">
+                <span>👥 Accommodates:</span>
+                <span>${listing.accommodates} guests</span>
+            </div>
+            <div class="detail-item">
+                <span>📍 Neighbourhood:</span>
+                <span>${listing.neighbourhood_name || 'Unknown'}</span>
+            </div>
+            <div class="detail-item">
+                <span>⭐ Rating:</span>
+                <span>${parseFloat(listing.avg_rating).toFixed(1)} (${listing.review_count} reviews)</span>
+            </div>
+            <div class="detail-item">
+                <span>👤 Host:</span>
+                <span>${listing.host_name}${listing.is_superhost ? ' ⭐' : ''}</span>
+            </div>
+        </div>
+    `;
+}
+
+function updateWeightDisplay() {
+    const weights = {
+        price: parseFloat(document.getElementById('priceWeight').value),
+        location: parseFloat(document.getElementById('locationWeight').value),
+        amenity: parseFloat(document.getElementById('amenityWeight').value),
+        host: parseFloat(document.getElementById('hostWeight').value),
+        rating: parseFloat(document.getElementById('ratingWeight').value)
+    };
+    
+    // Update display values
+    document.getElementById('priceWeightValue').textContent = weights.price.toFixed(1);
+    document.getElementById('locationWeightValue').textContent = weights.location.toFixed(1);
+    document.getElementById('amenityWeightValue').textContent = weights.amenity.toFixed(1);
+    document.getElementById('hostWeightValue').textContent = weights.host.toFixed(1);
+    document.getElementById('ratingWeightValue').textContent = weights.rating.toFixed(1);
+    
+    // Update total
+    const total = Object.values(weights).reduce((sum, val) => sum + val, 0);
+    document.getElementById('totalWeight').textContent = total.toFixed(1);
+    
+    // Update color based on validity
+    const totalElement = document.getElementById('totalWeight');
+    if (Math.abs(total - 1.0) < 0.01) {
+        totalElement.style.color = '#28a745';
+    } else {
+        totalElement.style.color = '#dc3545';
+    }
+}
+
+async function updateWeights() {
+    const weights = {
+        price: parseFloat(document.getElementById('priceWeight').value),
+        location: parseFloat(document.getElementById('locationWeight').value),
+        amenity: parseFloat(document.getElementById('amenityWeight').value),
+        host: parseFloat(document.getElementById('hostWeight').value),
+        rating: parseFloat(document.getElementById('ratingWeight').value)
+    };
+    
+    try {
+        const response = await fetch('/api/recommendations/weights', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(weights)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            currentWeights = weights;
+            alert('Weights updated successfully!');
+            if (currentListingId) {
+                loadRecommendations();
+            }
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error updating weights:', error);
+        alert('Error updating weights. Please try again.');
+    }
+}
+
+async function loadCurrentWeights() {
+    try {
+        const response = await fetch('/api/recommendations/weights');
+        const weights = await response.json();
+        
+        document.getElementById('priceWeight').value = weights.price;
+        document.getElementById('locationWeight').value = weights.location;
+        document.getElementById('amenityWeight').value = weights.amenity;
+        document.getElementById('hostWeight').value = weights.host;
+        document.getElementById('ratingWeight').value = weights.rating;
+        
+        currentWeights = weights;
+        updateWeightDisplay();
+    } catch (error) {
+        console.error('Error loading current weights:', error);
+    }
+}
+
+async function loadRecommendations() {
+    if (!currentListingId) return;
+    
+    showLoading(true);
+    
+    const maxResults = document.getElementById('maxResults').value;
+    const minSimilarity = document.getElementById('minSimilarity').value;
+    
+    try {
+        const response = await fetch(`/api/recommendations/${currentListingId}?limit=${maxResults}&threshold=${minSimilarity}`);
+        const recommendations = await response.json();
+        
+        displayRecommendations(recommendations);
+        document.getElementById('recommendationsSection').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading recommendations:', error);
+        alert('Error loading recommendations. Please try again.');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function displayRecommendations(recommendations) {
+    const container = document.getElementById('recommendationsList');
+    
+    if (recommendations.length === 0) {
+        container.innerHTML = '<p style="text-align: center; padding: 2rem;">No similar listings found. Try adjusting the similarity threshold.</p>';
+        return;
+    }
+    
+    container.innerHTML = recommendations.map(rec => `
+        <div class="recommendation-card">
+            <h4>${rec.name}</h4>
+            <div class="similarity-score">
+                ${Math.round(rec.similarity_score * 100)}% Similar
+            </div>
+            
+            <div class="listing-details">
+                <div class="detail-item">
+                    <span>💰 Price:</span>
+                    <span>$${rec.price}/night</span>
+                </div>
+                <div class="detail-item">
+                    <span>🏠 Room Type:</span>
+                    <span>${rec.room_type}</span>
+                </div>
+                <div class="detail-item">
+                    <span>📍 Neighbourhood:</span>
+                    <span>${rec.neighbourhood_name || 'Unknown'}</span>
+                </div>
+                <div class="detail-item">
+                    <span>⭐ Rating:</span>
+                    <span>${parseFloat(rec.avg_rating).toFixed(1)} (${rec.review_count} reviews)</span>
+                </div>
+                <div class="detail-item">
+                    <span>👤 Host:</span>
+                    <span>${rec.host_name}${rec.is_superhost ? ' ⭐' : ''}</span>
+                </div>
+            </div>
+            
+            <div class="similarity-breakdown">
+                <h5>Similarity Breakdown:</h5>
+                ${createSimilarityBar('Price', rec.price_similarity)}
+                ${createSimilarityBar('Location', rec.location_similarity)}
+                ${createSimilarityBar('Amenities', rec.amenity_similarity)}
+                ${createSimilarityBar('Host', rec.host_similarity)}
+                ${createSimilarityBar('Rating', rec.rating_similarity)}
+            </div>
+        </div>
+    `).join('');
+}
+
+function createSimilarityBar(label, score) {
+    const percentage = Math.round(score * 100);
+    return `
+        <div class="similarity-bar">
+            <span>${label}:</span>
+            <div class="similarity-bar-fill">
+                <div style="width: ${percentage}%; background: #667eea; height: 100%; border-radius: 3px;"></div>
+            </div>
+            <span>${percentage}%</span>
+        </div>
+    `;
+}
+
+function refreshRecommendations() {
+    if (currentListingId) {
+        loadRecommendations();
+    }
+}
+
+function showLoading(show) {
+    document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+}
+</script>
+{% endblock %} 
