@@ -244,31 +244,32 @@
 
 .weight-controls {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 2rem;
     margin-bottom: 2rem;
 }
-
 .weight-item {
     display: flex;
     align-items: center;
     gap: 1rem;
+    min-width: 0;
 }
-
 .weight-item label {
-    min-width: 150px;
+    min-width: 120px;
     font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
-
 .weight-item input[type="range"] {
     flex: 1;
+    min-width: 0;
 }
-
 .weight-item span {
     min-width: 40px;
-    text-align: center;
+    text-align: right;
     font-weight: bold;
     color: #667eea;
+    margin-left: 0.5rem;
 }
 
 .weight-total {
@@ -451,7 +452,22 @@
         grid-template-columns: 1fr;
     }
 }
+@media (max-width: 900px) {
+    .weight-controls {
+        grid-template-columns: 1fr;
+    }
+}
+.weight-error {
+    color: #dc3545;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    display: none;
+}
 </style>
+
+<div id="weightError" class="weight-error"></div>
 
 <script>
 let currentListingId = null;
@@ -608,12 +624,26 @@ function updateWeightDisplay() {
     const total = Object.values(weights).reduce((sum, val) => sum + val, 0);
     document.getElementById('totalWeight').textContent = total.toFixed(1);
     
-    // Update color based on validity
+    // Show/hide error
     const totalElement = document.getElementById('totalWeight');
-    if (Math.abs(total - 1.0) < 0.01) {
-        totalElement.style.color = '#28a745';
-    } else {
+    const errorDiv = document.getElementById('weightError');
+    const updateBtn = document.getElementById('updateWeightsBtn');
+    if (total > 1.0 + 0.01) {
         totalElement.style.color = '#dc3545';
+        errorDiv.style.display = 'block';
+        updateBtn.disabled = true;
+        updateBtn.style.opacity = 0.6;
+        updateBtn.style.cursor = 'not-allowed';
+    } else {
+        errorDiv.style.display = 'none';
+        updateBtn.disabled = false;
+        updateBtn.style.opacity = 1;
+        updateBtn.style.cursor = 'pointer';
+        if (Math.abs(total - 1.0) < 0.01) {
+            totalElement.style.color = '#28a745';
+        } else {
+            totalElement.style.color = '#dc3545';
+        }
     }
 }
 
@@ -695,13 +725,19 @@ async function loadRecommendations() {
 
 function displayRecommendations(recommendations) {
     const container = document.getElementById('recommendationsList');
-    
-    if (recommendations.length === 0) {
+    // Get the min similarity threshold from the selector
+    const minSimilarity = parseFloat(document.getElementById('minSimilarity').value);
+    // Sort recommendations by similarity_score descending
+    const sorted = recommendations.slice().sort((a, b) => b.similarity_score - a.similarity_score);
+    // Filter recommendations by similarity_score
+    const filtered = sorted.filter(rec => rec.similarity_score >= minSimilarity);
+
+    if (filtered.length === 0) {
         container.innerHTML = '<p style="text-align: center; padding: 2rem;">No similar listings found. Try adjusting the similarity threshold.</p>';
         return;
     }
-    
-    container.innerHTML = recommendations.map(rec => `
+
+    container.innerHTML = filtered.map(rec => `
         <div class="recommendation-card">
             <h4>${rec.name}</h4>
             <div class="similarity-score">
