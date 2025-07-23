@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Listings for {{ host.host_name }} (ID: {{ host.host_id }})</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .host-details-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .page-header h1 {
+            margin: 0;
+            font-size: 2em;
+            font-weight: 600;
+        }
+        .revenue-summary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .revenue-summary h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+        .revenue-amount {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 0;
+        }
+        .listings-section {
+            margin-top: 30px;
+        }
+        .listings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .listings-header h2 {
+            color: #333;
+            font-size: 1.5em;
+        }
+        .listings-count {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        table.listings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        table.listings-table th, table.listings-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        table.listings-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        table.listings-table tr:last-child td {
+            border-bottom: none;
+        }
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .host-details-container {
+                padding: 5px;
+            }
+            .page-header h1 {
+                font-size: 1.2em;
+            }
+            .revenue-amount {
+                font-size: 2em;
+            }
+            table.listings-table th, table.listings-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="host-details-container">
+        <div class="page-header">
+            <h1>Property Listings for {{ host.host_name }} (ID: {{ host.host_id }})</h1>
+        </div>
+        
+        <div class="revenue-summary">
+            <h2>💰 Total Monthly Revenue</h2>
+            <p class="revenue-amount">${{ "{:,.0f}".format(performance.total_monthly_revenue) }}</p>
+        </div>
+        
+        <div class="listings-section">
+            <div class="listings-header">
+                <h2>🏠 Property Listings</h2>
+                <span class="listings-count">{{ listings|length }} listing{{ 's' if listings|length != 1 else '' }}</span>
+            </div>
+            {% if listings %}
+            <table class="listings-table">
+                <thead>
+                    <tr>
+                        <th style="background-color: #007bff;">Listing Name</th>
+                        <th style="background-color: #007bff;">Room Type</th>
+                        <th style="background-color: #007bff;">Accommodates</th>
+                        <th style="background-color: #007bff;">Price / Night</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for listing in listings %}
+                    <tr>
+                        <td>{{ listing.name }}</td>
+                        <td>{{ listing.room_type }}</td>
+                        <td>{{ listing.accommodates }}</td>
+                        <td>${{ '%.2f'|format(listing.price) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-data">
+                <p>No listings found for this host.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html> 

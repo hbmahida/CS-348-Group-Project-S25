@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-content">
+    <div class="agent-form-container">
+        <div class="page-header">
+            <h1>Link Agent to Brokerage Firm</h1>
+            <p>Establish reporting relationships within the brokerage firm network.</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="alert alert-{{ category }}">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('add_host_referral') }}" class="add-host-form">
+            <div class="form-section">
+                <h2>Agent Information</h2>
+                
+                <div class="form-group">
+                    <label for="host_id">Agent Name</label>
+                    <select name="host_id" id="host_id" required>
+                        <option value="">Select an agent...</option>
+                        {% for host in existing_hosts %}
+                            <option value="{{ host[0] }}" {% if current_host and current_host[0] == host[0] %}selected{% endif %}>{{ host[1] }} (ID: {{ host[0] }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="referred_by">Reports To</label>
+                    <select name="referred_by" id="referred_by">
+                        <option value="">None (Top-level agent)</option>
+                        {% for host in existing_hosts %}
+                            <option value="{{ host[0] }}" {% if current_host and current_host[10] == host[0] %}selected{% endif %}>{{ host[1] }} (ID: {{ host[0] }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="is_superhost">Is Superhost?</label>
+                    <input type="checkbox" name="is_superhost" id="is_superhost" value="1" {% if current_host and current_host[8] %}checked{% endif %}>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Link Agent</button>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('referral_network') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+
+        <div class="help-section">
+            <h3>How to Build a Brokerage Firm Network:</h3>
+            <ol>
+                <li><strong>For a brokerage head:</strong> Leave "Reports To" as "None"</li>
+                <li><strong>Add agents:</strong> Select the brokerage head in "Reports To"</li>
+                <li><strong>Analyze the firm:</strong> Go to Brokerage Firm Network and select your head</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<style>
+    .agent-form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 32px 18px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 28px 18px 18px 18px;
+        border-radius: 14px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    .form-section {
+        margin-bottom: 24px;
+    }
+    .form-group {
+        margin-bottom: 18px;
+    }
+    label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
+        display: block;
+    }
+    select, input[type="text"], input[type="number"], textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #cfd8dc;
+        font-size: 1.08em;
+        margin-top: 4px;
+        background: #f8f9fa;
+        transition: border 0.15s;
+    }
+    select:focus, input:focus, textarea:focus {
+        border: 1.5px solid #667eea;
+        outline: none;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 28px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: background 0.15s;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #4f5bd5 0%, #667eea 100%);
+    }
+    .btn-secondary {
+        background: #e3e7f7;
+        color: #333;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 1.05em;
+        font-weight: 500;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-secondary:hover {
+        background: #d1d9f7;
+    }
+    @media (max-width: 700px) {
+        .agent-form-container {
+            padding: 12px 2px;
+        }
+        .page-header {
+            padding: 14px 6px 10px 6px;
+        }
+    }
+</style>
+{% endblock %} 

@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-content">
+    <div class="notifications-header">
+        <h1>Host Notifications</h1>
+        <p>Advanced Feature: Trigger-based automatic notifications for hosts when new listings are added in their neighborhood.</p>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div class="alert alert-{{ category }}">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Filter Form -->
+    <form method="get" action="{{ url_for('view_notifications') }}" class="filter-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="host_id">Host:</label>
+                <select name="host_id" id="host_id" class="form-control">
+                    <option value="">All Hosts</option>
+                    {% for host_id, host_name in hosts %}
+                        <option value="{{ host_id }}" {% if current_filters.host_id == host_id %}selected{% endif %}>
+                            {{ host_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notification_type">Type:</label>
+                <select name="notification_type" id="notification_type" class="form-control">
+                    <option value="">All Types</option>
+                    <option value="NEW_COMPETITION" {% if current_filters.notification_type == 'NEW_COMPETITION' %}selected{% endif %}>
+                        New Competition
+                    </option>
+                    <option value="LISTING_ADDED" {% if current_filters.notification_type == 'LISTING_ADDED' %}selected{% endif %}>
+                        Listing Added
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">All Status</option>
+                    <option value="read" {% if current_filters.status == 'read' %}selected{% endif %}>Read</option>
+                    <option value="unread" {% if current_filters.status == 'unread' %}selected{% endif %}>Unread</option>
+                </select>
+            </div>
+            <div class="form-group filter-actions">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{{ url_for('view_notifications') }}" class="btn btn-secondary">Clear</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Notifications Table -->
+    <div class="table-container">
+        <table class="table notifications-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Host</th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Related Listing</th>
+                    <th>Price</th>
+                    <th>Neighbourhood</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th style="text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for notification in notifications %}
+                <tr class="{% if not notification.is_read %}notification-unread{% endif %}">
+                    <td>{{ notification.notification_id }}</td>
+                    <td>{{ notification.host_name }}</td>
+                    <td>
+                        <span class="notification-type notification-{{ notification.notification_type.lower() }}">
+                            {{ notification.notification_type.replace('_', ' ').title() }}
+                        </span>
+                    </td>
+                    <td class="message-cell">{{ notification.message }}</td>
+                    <td>
+                        {% if notification.related_listing_name %}
+                            {{ notification.related_listing_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if notification.related_listing_price %}
+                            ${{ '%.2f'|format(notification.related_listing_price) }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ notification.neighbourhood or '-' }}</td>
+                    <td>{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <span class="status-badge status-{{ notification.status.lower() }}">
+                            {{ notification.status }}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        {% if not notification.is_read %}
+                            <form method="post" action="{{ url_for('mark_notification_read') }}" style="display: inline;">
+                                <input type="hidden" name="notification_id" value="{{ notification.notification_id }}">
+                                <button type="submit" class="btn btn-sm btn-success">Mark Read</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if notifications|length == 0 %}
+                <tr>
+                    <td colspan="10" style="text-align: center; color: #666;">
+                        No notifications found. Try adding a new listing to trigger notifications!
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <!-- Pagination Controls -->
+        {% if total_pages > 1 %}
+        <div class="pagination-controls">
+            <form method="get" action="{{ url_for('view_notifications') }}" style="display: inline;">
+                {% for key, value in current_filters.items() %}
+                    {% if value %}
+                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+                <button type="submit" name="page" value="{{ prev_page }}" class="btn btn-secondary" {% if page <= 1 %}disabled{% endif %}>&laquo; Previous</button>
+                <span class="pagination-info">Page {{ page }} of {{ total_pages }}</span>
+                <button type="submit" name="page" value="{{ next_page }}" class="btn btn-secondary" {% if page >= total_pages %}disabled{% endif %}>Next &raquo;</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Statistics -->
+    <div class="notification-stats">
+        <h3>Statistics</h3>
+        <p>Total notifications: {{ notifications|length }}</p>
+        <p>Unread notifications: {{ notifications|selectattr('is_read', 'equalto', false)|list|length }}</p>
+        <p>Read notifications: {{ notifications|selectattr('is_read', 'equalto', true)|list|length }}</p>
+    </div>
+</div>
+
+<style>
+body {
+    background: #f4f6fb;
+}
+.main-content {
+    max-width: 1200px;
+    margin: 40px auto 0 auto;
+    padding: 32px 16px 48px 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.notifications-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 36px 32px 24px 32px;
+    border-radius: 22px;
+    margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+    text-align: center;
+}
+.notifications-header h1 {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.notifications-header p {
+    font-size: 1.1em;
+    color: #e0e0e0;
+    margin-bottom: 0;
+}
+.filter-form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(102,126,234,0.07);
+}
+.form-row {
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+}
+.filter-actions {
+    display: flex;
+    flex-direction: column;;
+    align-items: flex-start;
+    gap: 8px;
+}
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.table-container {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(102,126,234,0.08);
+    padding: 24px 10px 18px 10px;
+    margin-bottom: 32px;
+    overflow-x: auto;
+}
+.notifications-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    background: #f8f9fa;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(102,126,234,0.06);
+}
+.notifications-table th, .notifications-table td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 1.05em;
+}
+.notifications-table th {
+    background-color: #e3e7f7;
+    font-weight: bold;
+}
+.notifications-table tr:last-child td {
+    border-bottom: none;
+}
+.notifications-table tr.notification-unread {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+.notification-type {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.notification-new_competition {
+    background-color: #dc3545;
+    color: white;
+}
+.notification-listing_added {
+    background-color: #28a745;
+    color: white;
+}
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.status-read {
+    background-color: #6c757d;
+    color: white;
+}
+.status-unread {
+    background-color: #ffc107;
+    color: black;
+}
+.message-cell {
+    max-width: 300px;
+    word-wrap: break-word;
+}
+.notification-stats {
+    background: #e9ecef;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(102,126,234,0.07);
+}
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-top: 18px;
+}
+.pagination-info {
+    font-size: 1.08em;
+    color: #333;
+    font-weight: 500;
+}
+@media (max-width: 900px) {
+    .main-content {
+        padding: 8px 2px;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    .table-container {
+        padding: 8px 2px 8px 2px;
+    }
+}
+@media (max-width: 600px) {
+    .notifications-header {
+        padding: 16px 4px 10px 4px;
+    }
+    .summary-card {
+        min-width: 120px;
+        padding: 12px 4px;
+    }
+    .notifications-table th, .notifications-table td {
+        padding: 6px 2px;
+        font-size: 0.98em;
+    }
+}
+</style>
+{% endblock %}
+ 
