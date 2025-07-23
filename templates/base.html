@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Airbnb Manager</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-    <div class="container">
-        <aside class="sidebar">
-            <h2>Airbnb Manager</h2>
-            <a href="{{ url_for('home') }}" style="color: #ffffff; font-weight: bold;">🏠 Home</a>
-            <a href="{{ url_for('add_sample') }}">➕ Add Sample Listings</a>
-            <a href="{{ url_for('view_listings') }}">👁️ View Listings</a>
-            <a href="{{ url_for('add_listing') }}">📝 Add Listing</a>
-            <a href="{{ url_for('update_listing') }}">✏️ Update Listing</a>
-            <a href="{{ url_for('delete_listing') }}">❌ Delete Listing</a>
-            <a href="{{ url_for('delete_all') }}">🗑️ Delete All Listings</a>
-        </aside>
+    <!-- ────────── TOP NAVBAR ────────── -->
+    <nav class="topnav">
+        <span class="logo">Airbnb Manager</span>
 
-        <main class="main-content">
-            {% block content %}{% endblock %}
-        </main>
-    </div>
+        <!-- navigation links -->
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">🏠 Home</a></li>
+            <li><a href="{{ url_for('add_sample') }}">➕ Add Sample Listings</a></li>
+            <li><a href="{{ url_for('view_listings') }}">👁️ View Listings</a></li>
+            <li><a href="{{ url_for('add_listing') }}">📝 Add Listing</a></li>
+            <li><a href="{{ url_for('update_listing') }}">✏️ Update Listing</a></li>
+            <li><a href="{{ url_for('delete_listing') }}">❌ Delete Listing</a></li>
+            <li><a href="{{ url_for('delete_all') }}">🗑️ Delete All Listings</a></li>
+        </ul>
+    </nav>
+
+    <!-- main page content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>
