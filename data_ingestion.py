@@ -200,39 +200,42 @@ def load_listings_from_csv(csv_file_path, conn):
                 
                 last_scraped = parse_date(row['last_scraped'])
                 
-                # Insert listing
-                cur.execute("""
-                    INSERT INTO Listing (listing_id, host_id, name, description, neighbourhood_overview,
-                                       room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds,
-                                       price, minimum_nights, maximum_nights, instant_bookable,
-                                       created_date, last_scraped)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (listing_id) DO NOTHING
-                """, (listing_id, host_id, name, description, neighbourhood_overview,
-                     room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds,
-                     price, minimum_nights, maximum_nights, instant_bookable,
-                     datetime.now().date(), last_scraped))
-                
-                # Insert neighbourhood
                 neighbourhood_name = row['neighbourhood_cleansed'] if pd.notna(row['neighbourhood_cleansed']) else 'Unknown'
                 neighbourhood_group = row['neighbourhood_group_cleansed'] if pd.notna(row['neighbourhood_group_cleansed']) else None
                 
                 latitude = float(row['latitude']) if pd.notna(row['latitude']) else None
                 longitude = float(row['longitude']) if pd.notna(row['longitude']) else None
-                
-                # Validate coordinates
+
+                # Coordinates sanitation
                 if latitude is not None and (latitude < -90 or latitude > 90):
                     latitude = None
                 if longitude is not None and (longitude < -180 or longitude > 180):
                     longitude = None
                 
+                # Insert listing
+                cur.execute("""
+                    INSERT INTO Listing (listing_id, host_id, name, description, neighbourhood_overview,
+                                       room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds,
+                                       price, minimum_nights, maximum_nights, instant_bookable,
+                                       created_date, last_scraped, geopoint)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    ST_SetSRID(
+                    ST_MakePoint(%s, %s), 4326
+                    )::geography
+                    )
+                    ON CONFLICT (listing_id) DO NOTHING
+                """, (listing_id, host_id, name, description, neighbourhood_overview,
+                     room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds,
+                     price, minimum_nights, maximum_nights, instant_bookable,
+                     datetime.now().date(), last_scraped, longitude, latitude))
+                
                 # Get next neighbourhood_id
                 cur.execute("SELECT COALESCE(MAX(neighbourhood_id), 0) + 1 FROM Neighbourhood")
                 neighbourhood_id = cur.fetchone()[0]
                 
+                # Insert neighbourhood
                 cur.execute("""
-                    INSERT INTO Neighbourhood (neighbourhood_id, listing_id, name, neighbourhood_group,
-                                             latitude, longitude)
+                    INSERT INTO Neighbourhood (neighbourhood_id, listing_id, name, neighbourhood_group, latitude, longitude)
                     VALUES (%s, %s, %s, %s, %s, %s)
                     ON CONFLICT DO NOTHING
                 """, (neighbourhood_id, listing_id, neighbourhood_name, neighbourhood_group,

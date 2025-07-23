@@ -1,4 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
+from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
 import psycopg2
 from psycopg2 import errors, IntegrityError
 from db_config import DB_CONFIG
@@ -25,15 +26,30 @@ def get_db_connection():
 # Initializes the database schema from data.sql.
 def init_db():
     conn = get_db_connection()
-    cur = conn.cursor()
+    cur  = conn.cursor()
+
     with open('data.sql', 'r') as f:
         ddl_script = f.read()
-    
-    # Execute the entire script at once to handle dollar-quoted strings properly
-    cur.execute(ddl_script)
+
+    # 1) Remove any pure-single-line comments
+    lines = ddl_script.splitlines()
+    non_comment = [
+        line for line in lines
+        if not line.strip().startswith('--')
+    ]
+    cleaned = "\n".join(non_comment)
+
+    # 2) Split on semicolons and execute each non-empty statement
+    for stmt in cleaned.split(';'):
+        sql = stmt.strip()
+        if not sql:
+            continue
+        cur.execute(sql)
+
     conn.commit()
     cur.close()
     conn.close()
+
 
 # Route for homepage.
 @app.route('/')
@@ -47,6 +63,7 @@ def home():
     l.name,
     l.price,
     n.name AS neighbourhood,
+    l.minimum_nights AS min_nights,
     COALESCE(AVG(r.rating), 0) AS avg_rating
     FROM Listing l
     JOIN Neighbourhood n ON n.listing_id = l.listing_id
@@ -61,10 +78,11 @@ def home():
             "listing_id":    r[0],
             "name":          r[1],
             "price":         float(r[2]),
-            "avg_rating": float(r[4]),
-            "neighbourhood": r[3]
+            "neighbourhood": r[3],
+            "min_nights":    r[4],
+            "avg_rating":    float(r[5]),
         }
-        for r in rows[:3]
+        for r in rows
     ]
     cur.close()
     conn.close()
@@ -201,14 +219,18 @@ def view_listings():
     # 1. Read all params
     search = request.args.get('search', type=str)
     neighbourhood = request.args.get('neighbourhood', type=str)
-    room_type     = request.args.get('room_type',    type=str)
-    price_min     = request.args.get('price_min',    type=float)
-    price_max     = request.args.get('price_max',    type=float)
-    min_nights    = request.args.get('min_nights',   type=int)
-    sort_by     = request.args.get('sort_by',      type=str)
-    sort_order  = request.args.get('sort_order',   type=str)
-    page        = request.args.get('page', type=int) or 1
-    per_page    = 20
+    room_type     = request.args.get('room_type', type=str)
+    price_min     = request.args.get('price_min', type=float)
+    price_max     = request.args.get('price_max', type=float)
+    min_nights    = request.args.get('min_nights', type=int)
+    sort_by       = request.args.get('sort_by', type=str)
+    sort_order    = request.args.get('sort_order', type=str)
+    user_lat      = request.args.get('lat', type=float);
+    user_lng      = request.args.get('lng', type=float);
+    radius_km     = request.args.get('radius_km', type=float);
+    preset_place  = request.args.get('preset_place',  type=str)
+    page          = request.args.get('page', type=int) or 1
+    per_page      = 20
 
     # 2. Build base query (join on Neighbourhood.listing_id)
     base_query = """
@@ -217,9 +239,12 @@ def view_listings():
       l.name,
       l.price,
       l.room_type,
-      n.name           AS neighbourhood,
-      AVG(r.rating)    AS avg_rating,
-      COUNT(r.review_id) AS review_count
+      l.minimum_nights,
+      n.name             AS neighbourhood,
+      AVG(r.rating)      AS avg_rating,
+      COUNT(r.review_id) AS review_count,
+      ST_Y(l.geopoint::geometry) AS lat,
+      ST_X(l.geopoint::geometry) AS lng
     FROM Listing l
     JOIN Neighbourhood n
       ON n.listing_id = l.listing_id
@@ -257,6 +282,20 @@ def view_listings():
     if min_nights is not None:
         where_clauses.append("l.minimum_nights >= %s")
         params.append(min_nights)
+    
+    # 3c. Geospatial filter
+    if user_lat is not None and user_lng is not None and radius_km is not None:
+        radius_m = radius_km * 1000
+        where_clauses.append("""
+          ST_DWithin(
+            l.geopoint,
+            ST_SetSRID(
+              ST_MakePoint(%s, %s), 4326
+            )::geography,
+            %s
+          )
+        """)
+        params.extend([user_lng, user_lat, radius_m])
 
     # 4. Stitching the query together.
     where_sql = ""
@@ -289,9 +328,12 @@ def view_listings():
           'name':         r[1],
           'price':        float(r[2]),
           'room_type':    r[3],
-          'neighbourhood':r[4],
-          'avg_rating':   round(float(r[5]), 2) if r[5] is not None else None,
-          'review_count': int(r[6])
+          'min_nights':   r[4],
+          'neighbourhood':r[5],
+          'avg_rating':   round(float(r[6]), 2) if r[6] is not None else None,
+          'review_count': int(r[7]),
+          'lat':          float(r[8]),
+          'lng':          float(r[9])
         }
         for r in rows
     ]
@@ -301,6 +343,7 @@ def view_listings():
     cur.execute(count_query, params)
     total_count = cur.fetchone()[0]
     total_pages = (total_count + per_page - 1) // per_page
+    total_pages = max(1, total_pages) # Prevents weird numbering when no entries are found.
 
     # 7. Fetch distinct options for your filter dropdowns
     cur.execute("SELECT DISTINCT name FROM Neighbourhood ORDER BY name;")
@@ -319,13 +362,18 @@ def view_listings():
       neighbourhoods=neighbourhoods,
       room_types=room_types,
       current_filters={
+        'search':        search        or '',
         'neighbourhood': neighbourhood or '',
         'room_type':     room_type     or '',
         'price_min':     price_min     or '',
         'price_max':     price_max     or '',
         'min_nights':    min_nights    or '',
         'sort_by':       sort_by       or '',
-        'sort_order':    sort_order    or ''
+        'sort_order':    sort_order    or '',
+        'lat':           user_lat      or '',
+        'lng':           user_lng      or '',
+        'radius_km':     radius_km     or '',
+        'preset_place':  preset_place  or ''
       },
       page=page,
       total_pages=total_pages
@@ -377,12 +425,17 @@ def add_listing():
                          price, minimum_nights, maximum_nights,
                          instant_bookable, created_date, last_scraped)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                               %s, %s, %s, %s, %s, %s, %s)''',
+                               %s, %s, %s, %s, %s, %s, %s,
+                               ST_SetSRID(
+                               ST_MakePoint(%s, %s), 4326
+                               )::geography
+                              )
+                    )''',
                     (listing_id, host_id, name, description,
                      neighbourhood_overview, room_type, accommodates,
                      bathrooms, bathrooms_text, bedrooms, beds,
                      price, minimum_nights, maximum_nights,
-                     instant_bookable, created_date, last_scraped)
+                     instant_bookable, created_date, last_scraped, longitude, latitude)
                 )
                 cur.execute(
                     'SELECT COALESCE(MAX(neighbourhood_id), 0) + 1 FROM Neighbourhood;'
@@ -474,6 +527,24 @@ def update_listing():
             sql_n = f"UPDATE Neighbourhood SET {', '.join(set_nb_clauses)} WHERE listing_id = %s;"
             nb_params.append(listing_id)
             cur.execute(sql_n, nb_params)
+
+            # Update geopoint in listing if coordinates have been changed.
+            if nbhd['latitude'] is not None and nbhd['longitude'] is not None:
+                cur.execute(
+                    """
+                    UPDATE Listing
+                    SET geopoint = ST_SetSRID(
+                                    ST_MakePoint(%s, %s),
+                                    4326
+                                   )::geography
+                     WHERE listing_id = %s;
+                    """,
+                    (
+                        nbhd['longitude'],
+                        nbhd['latitude'],
+                        listing_id
+                    )
+                )
 
         conn.commit()
         flash(f'Update to listing {listing_id} successful', 'success')

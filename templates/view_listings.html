@@ -16,8 +16,9 @@
           placeholder="🔍 Search"
           value="{{ current_filters.search }}"
         >
+        <button type="button" class="btn" onclick="openPlacesModal()">📍 Listings Near Me</button>
         <button type="button" class="btn" onclick="openFilterModal()">⚙️ Filter</button>
-        <button type="button" class="btn" onclick="openSortModal()">⚙️ Sort</button>
+        <button type="button" class="btn" onclick="openSortModal()">📶 Sort</button>
     </div>
 
     <!-- Filter Modal -->
@@ -95,7 +96,7 @@
       </div>
     </div>
 
-      <!-- Sort Modal -->
+    <!-- Sort Modal -->
     <div class="modal" id="sortModal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -146,6 +147,64 @@
         </div>
       </div>
     </div>
+
+  <!-- Places Around Me Modal -->
+  <div class="modal" id="placesModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h3 class="modal-title">Find Listings Near Me</h3>
+          <button class="close-btn" onclick="closePlacesModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- 2–3 preset locations -->
+          <div class="form-group">
+            <label for="preset_place">Choose a preset:</label>
+            <select id="preset_place" name="preset_place">
+              <option value="">-- pick one --</option>
+              <option value="43.6532,-79.3832"
+                {% if current_filters.preset_place=='43.6532,-79.3832' %}selected{% endif %}>
+                Toronto downtown
+              </option>
+              <option value="43.6510,-79.3470"
+                {% if current_filters.preset_place=='43.6510,-79.3470' %}selected{% endif %}>
+                CN Tower
+              </option>
+              <option value="43.7001,-79.4163"
+                {% if current_filters.preset_place=='43.7001,-79.4163' %}selected{% endif %}>
+                Waterfront
+              </option>
+            </select>
+          </div>
+
+          <hr/>
+
+          <!-- Or enter your own coords -->
+          <div class="form-group">
+            <label>Your location:</label>
+            <input type="number" step="any" id="user_lat" name="lat" placeholder="Latitude", value="{{ current_filters.lat }}" />
+            <input type="number" step="any" id="user_lng" name="lng" placeholder="Longitude", value="{{ current_filters.lng }}" />
+          </div>
+
+          <!-- Radius -->
+          <div class="form-group">
+            <label for="radius_km">Radius (km):</label>
+            <input type="number" step="any" id="radius_km" name="radius_km" placeholder="e.g. 5" value="{{ current_filters.radius_km or 5 }}" />
+          </div>
+        </div>
+
+        <div class="modal-footer" style="justify-content:center;">
+          <button type="button" class="btn btn-secondary" onclick="clearPlaces()">Clear</button>
+          <button type="submit" class="btn btn-primary">Show Nearby</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+    
   </form>
 
 
@@ -154,7 +213,7 @@
     <thead>
       <tr>
         <th>ID</th><th>Name</th><th>Neighbourhood</th>
-        <th>Room Type</th><th>Price</th><th>Avg Rating</th><th>Reviews</th>
+        <th>Room Type</th><th>Price</th><th>Minimum Nights</th><th>Avg Rating</th><th>Reviews</th>
       </tr>
     </thead>
     <tbody>
@@ -165,6 +224,7 @@
         <td>{{ listing.neighbourhood }}</td>
         <td>{{ listing.room_type }}</td>
         <td>${{ listing.price }}</td>
+        <td>{{ listing.min_nights or 1 }}</td>
         <td>{{ listing.avg_rating or 'N/A' }}</td>
         <td>{{ listing.review_count or 0 }}</td>
       </tr>
@@ -187,6 +247,10 @@
         min_nights=current_filters.min_nights,
         sort_by=current_filters.sort_by,
         sort_order=current_filters.sort_order,
+        lat=current_filters.lat,
+        lng=current_filters.lng,
+        radius_km=current_filters.radius_km,
+        preset_place=current_filters.preset_place,
         page=1
       ) }}">&lt;&lt;</a>
       <a class="btn" href="{{ url_for('view_listings',
@@ -198,6 +262,10 @@
         min_nights=current_filters.min_nights,
         sort_by=current_filters.sort_by,
         sort_order=current_filters.sort_order,
+        lat=current_filters.lat,
+        lng=current_filters.lng,
+        radius_km=current_filters.radius_km,
+        preset_place=current_filters.preset_place,
         page=page-1
       ) }}">Previous</a>
     {% else %}
@@ -215,6 +283,10 @@
         min_nights=current_filters.min_nights,
         sort_by=current_filters.sort_by,
         sort_order=current_filters.sort_order,
+        lat=current_filters.lat,
+        lng=current_filters.lng,
+        radius_km=current_filters.radius_km,
+        preset_place=current_filters.preset_place,
         page=page+1
       ) }}">Next</a>
       <a class="btn" href="{{ url_for('view_listings',
@@ -226,6 +298,10 @@
         min_nights=current_filters.min_nights,
         sort_by=current_filters.sort_by,
         sort_order=current_filters.sort_order,
+        lat=current_filters.lat,
+        lng=current_filters.lng,
+        radius_km=current_filters.radius_km,
+        preset_place=current_filters.preset_place,
         page=total_pages
       ) }}">&gt;&gt;</a>
     {% else %}
@@ -233,6 +309,83 @@
       <span class="btn btn-disabled" style="pointer-events:none;opacity:0.5;">&gt;&gt;</span>
     {% endif %}
   </div>
+
+  <!-- Interactive Map -->
+  <script id="initial-data" type="application/json">
+  {
+    "listings":        {{ listings       | tojson | safe }},
+    "current_filters": {{ current_filters | tojson | safe }}
+  }
+  </script>
+
+  <!-- Map container -->
+  <div id="map" style="height: 400px; margin: 2rem 0;"></div>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const blob = document.getElementById('initial-data');
+    let initData;
+    try {
+      initData = JSON.parse(blob.textContent);
+    } catch (e) {
+      return console.error('Error parsing initial-data JSON', e);
+    }
+    const listings       = initData.listings || [];
+    const currentFilters = initData.current_filters || {};
+
+    // Initialize the map centered on Toronto at zoom 12
+    const toronto = [43.6532, -79.3832];
+    const map = L.map('map').setView(toronto, 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 3) Plot a marker for each listing
+    const markers = [];
+    listings.forEach(l => {
+      if (l.lat != null && l.lng != null) {
+        const m = L.marker([l.lat, l.lng])
+          .addTo(map)
+          .bindPopup(`
+            <strong>${l.name}</strong><br>
+            ${l.price} $ · ${l.room_type}<br>
+            Rating: ${l.avg_rating ?? 'N/A'}
+          `);
+        markers.push(m);
+      }
+    });
+
+    // If the user specified lat, lng, and radius, draw and zoom to it
+    const lat = parseFloat(currentFilters.lat),
+          lng = parseFloat(currentFilters.lng),
+          rKm = parseFloat(currentFilters.radius_km);
+
+    if (!isNaN(lat) && !isNaN(lng) && !isNaN(rKm)) {
+
+      L.circleMarker([lat, lng], {
+        radius: 2,
+        color: 'red',
+        weight: 2,
+        fillColor: '#f03',
+        fillOpacity: 0.7
+      })
+      .addTo(map)
+      .bindPopup('Search center');
+
+      const circle = L.circle([lat, lng], { radius: rKm * 1000 })
+        .addTo(map)
+        .bindPopup(`Within ${rKm} km`);
+      map.fitBounds(circle.getBounds().pad(0.1));
+    }
+  });
+  </script>
+  <!-- Interactive Map Ends -->
 
   <!-- Modal Show/Hide Script -->
   <script>
@@ -276,10 +429,38 @@
     function clearSort() {
       document.getElementById('sort_by').value = '';
       document.getElementById('sort_order').value = 'asc';
+
+      document.getElementById('filterForm').submit();
     }
 
+    function openPlacesModal() {
+      document.getElementById('placesModal').classList.add('show');
+    }
+    function closePlacesModal() {
+      document.getElementById('placesModal').classList.remove('show');
+    }
+
+    function clearPlaces() {
+      document.getElementById('preset_place').value   = '';
+      document.getElementById('user_lat').value       = '';
+      document.getElementById('user_lng').value       = '';
+      document.getElementById('radius_km').value      = '';
+
+      document.getElementById('filterForm').submit();
+    }
+
+    // When user picks a preset, auto-fill the lat/lng inputs
+    document.getElementById('preset_place')
+      .addEventListener('change', e => {
+        const val = e.target.value;
+        if (!val) return;
+        const [lat, lng] = val.split(',');
+        document.getElementById('user_lat').value = lat;
+        document.getElementById('user_lng').value = lng;
+      });
+
     // close modals on outside click / ESC
-    ['filterModal','sortModal'].forEach(id => {
+    ['filterModal','sortModal', 'placesModal'].forEach(id => {
       const m = document.getElementById(id);
       m.addEventListener('click', e => {
         if (e.target === m) m.classList.remove('show');
@@ -290,6 +471,7 @@
       if (e.key==='Escape') {
         closeFilterModal();
         closeSortModal();
+        closePlacesModal();
       }
     });
   </script>
