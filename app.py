@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
 import psycopg2
 from psycopg2 import errors, IntegrityError
 from db_config import DB_CONFIG
@@ -145,7 +145,9 @@ def view_listings():
       l.minimum_nights,
       n.name             AS neighbourhood,
       AVG(r.rating)      AS avg_rating,
-      COUNT(r.review_id) AS review_count
+      COUNT(r.review_id) AS review_count,
+      ST_Y(l.geopoint::geometry) AS lat,
+      ST_X(l.geopoint::geometry) AS lng
     FROM Listing l
     JOIN Neighbourhood n
       ON n.listing_id = l.listing_id
@@ -232,7 +234,9 @@ def view_listings():
           'min_nights':   r[4],
           'neighbourhood':r[5],
           'avg_rating':   round(float(r[6]), 2) if r[6] is not None else None,
-          'review_count': int(r[7])
+          'review_count': int(r[7]),
+          'lat':          float(r[8]),
+          'lng':          float(r[9])
         }
         for r in rows
     ]

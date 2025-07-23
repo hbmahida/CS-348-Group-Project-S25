@@ -6,43 +6,118 @@ INSERT INTO Host (host_id, host_name, host_since, host_location, host_about, hos
 (4, 'Sarah Johnson', '2018-11-05', 'Miami, FL', 'Beach lover and yoga instructor. Peaceful retreats await you.', 'within a day', 65, 75, FALSE, 2),
 (5, 'Michael Brown', '2022-08-18', 'Austin, TX', 'Music enthusiast with unique properties in the heart of Austin.', 'within a few hours', 89, 84, FALSE, 1);
 
--- LISTING table (9 unique listings)
-INSERT INTO Listing (listing_id, host_id, name, description, neighbourhood_overview, room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds, price, minimum_nights, maximum_nights, instant_bookable, created_date, last_scraped) VALUES
-(101, 1, 'Cozy Manhattan Studio', 'Modern studio apartment in the heart of NYC with amazing city views.', 'Vibrant neighbourhood with great restaurants and easy subway access.', 'Entire home/apt', 2, 1.0, '1 bath', 0, 1, 150.00, 2, 30, TRUE, '2020-02-01', '2025-06-10'),
-(102, 1, 'Brooklyn Loft Experience', 'Spacious loft with exposed brick walls and industrial charm.', 'Hip Brooklyn neighbourhood with artisanal coffee shops and galleries.', 'Entire home/apt', 4, 2.0, '2 baths', 2, 2, 200.00, 3, 60, FALSE, '2020-03-15', '2025-06-09'),
-(103, 1, 'Central Park View Room', 'Private room with stunning Central Park views.', 'Upper West Side with easy access to museums and parks.', 'Private room', 1, 0.5, 'Half-bath', 1, 1, 95.00, 1, 14, TRUE, '2020-05-20', '2025-06-08'),
-(104, 2, 'Hollywood Hills Retreat', 'Luxury home with pool and panoramic city views.', 'Exclusive Hollywood Hills area with celebrity neighbors.', 'Entire home/apt', 6, 3.0, '3 full baths', 3, 4, 350.00, 7, 90, FALSE, '2019-07-01', '2025-06-07'),
-(105, 2, 'Venice Beach Bungalow', 'Charming beach house just steps from the ocean.', 'Bohemian Venice with street art, boardwalk, and beach culture.', 'Entire home/apt', 3, 1.5, '1.5 baths', 2, 2, 180.00, 2, 45, TRUE, '2019-09-12', '2025-06-06'),
-(106, 3, 'Tech Hub Apartment', 'Modern apartment in SOMA with high-speed internet and workspace.', 'Heart of San Francisco tech scene with startup culture.', 'Entire home/apt', 2, 1.0, '1 bathroom', 1, 1, 220.00, 1, 28, TRUE, '2021-04-05', '2025-06-05'),
-(107, 4, 'South Beach Penthouse', 'Luxury penthouse with ocean views and rooftop access.', 'Art Deco district with nightlife, dining, and beach access.', 'Entire home/apt', 8, 4.0, '4 full bathrooms', 4, 6, 500.00, 5, 120, FALSE, '2018-12-10', '2025-06-04'),
-(108, 4, 'Coral Gables Villa', 'Mediterranean-style villa with private garden and pool.', 'Upscale Coral Gables with historic architecture and fine dining.', 'Entire home/apt', 5, 2.5, '2.5 baths', 3, 3, 280.00, 3, 75, FALSE, '2019-01-20', '2025-06-03'),
-(109, 5, 'Music District Loft', 'Industrial loft in the heart of Austins live music scene.', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 165.00, 2, 21, TRUE, '2022-09-01', '2025-06-02'),
-(110, 5, 'Goldrej Loft', 'Something somethihng', 'East Austin with live music venues, food trucks, and local culture.', 'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3, 240.00, 2, 21, TRUE, '2022-09-01', '2025-06-02'),
-(111, 2, 'Greenwood Heights Studio', 
+-- LISTING table (15 unique listings, now with geopoint)
+INSERT INTO Listing (
+  listing_id, host_id, name, description, neighbourhood_overview,
+  room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds,
+  price, minimum_nights, maximum_nights, instant_bookable,
+  created_date, last_scraped, geopoint
+) VALUES
+(101, 1, 'Cozy Manhattan Studio',
+  'Modern studio apartment in the heart of NYC with amazing city views.',
+  'Vibrant neighbourhood with great restaurants and easy subway access.',
+  'Entire home/apt', 2, 1.0, '1 bath', 0, 1,
+  150.00, 2, 30, TRUE, '2020-02-01', '2025-06-10',
+  ST_SetSRID(ST_MakePoint(-73.9851, 40.7589), 4326)::geography
+),
+(102, 1, 'Brooklyn Loft Experience',
+  'Spacious loft with exposed brick walls and industrial charm.',
+  'Hip Brooklyn neighbourhood with artisanal coffee shops and galleries.',
+  'Entire home/apt', 4, 2.0, '2 baths', 2, 2,
+  200.00, 3, 60, FALSE, '2020-03-15', '2025-06-09',
+  ST_SetSRID(ST_MakePoint(-73.9571, 40.7081), 4326)::geography
+),
+(103, 1, 'Central Park View Room',
+  'Private room with stunning Central Park views.',
+  'Upper West Side with easy access to museums and parks.',
+  'Private room', 1, 0.5, 'Half-bath', 1, 1,
+  95.00, 1, 14, TRUE, '2020-05-20', '2025-06-08',
+  ST_SetSRID(ST_MakePoint(-73.9759, 40.7873), 4326)::geography
+),
+(104, 2, 'Hollywood Hills Retreat',
+  'Luxury home with pool and panoramic city views.',
+  'Exclusive Hollywood Hills area with celebrity neighbors.',
+  'Entire home/apt', 6, 3.0, '3 full baths', 3, 4,
+  350.00, 7, 90, FALSE, '2019-07-01', '2025-06-07',
+  ST_SetSRID(ST_MakePoint(-118.3215, 34.1341), 4326)::geography
+),
+(105, 2, 'Venice Beach Bungalow',
+  'Charming beach house just steps from the ocean.',
+  'Bohemian Venice with street art, boardwalk, and beach culture.',
+  'Entire home/apt', 3, 1.5, '1.5 baths', 2, 2,
+  180.00, 2, 45, TRUE, '2019-09-12', '2025-06-06',
+  ST_SetSRID(ST_MakePoint(-118.4912, 34.0195), 4326)::geography
+),
+(106, 3, 'Tech Hub Apartment',
+  'Modern apartment in SOMA with high-speed internet and workspace.',
+  'Heart of San Francisco tech scene with startup culture.',
+  'Entire home/apt', 2, 1.0, '1 bathroom', 1, 1,
+  220.00, 1, 28, TRUE, '2021-04-05', '2025-06-05',
+  ST_SetSRID(ST_MakePoint(-122.4094, 37.7749), 4326)::geography
+),
+(107, 4, 'South Beach Penthouse',
+  'Luxury penthouse with ocean views and rooftop access.',
+  'Art Deco district with nightlife, dining, and beach access.',
+  'Entire home/apt', 8, 4.0, '4 full bathrooms', 4, 6,
+  500.00, 5, 120, FALSE, '2018-12-10', '2025-06-04',
+  ST_SetSRID(ST_MakePoint(-80.1300, 25.7907), 4326)::geography
+),
+(108, 4, 'Coral Gables Villa',
+  'Mediterranean-style villa with private garden and pool.',
+  'Upscale Coral Gables with historic architecture and fine dining.',
+  'Entire home/apt', 5, 2.5, '2.5 baths', 3, 3,
+  280.00, 3, 75, FALSE, '2019-01-20', '2025-06-03',
+  ST_SetSRID(ST_MakePoint(-80.2534, 25.7454), 4326)::geography
+),
+(109, 5, 'Music District Loft',
+  'Industrial loft in the heart of Austin’s live music scene.',
+  'East Austin with live music venues, food trucks, and local culture.',
+  'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3,
+  165.00, 2, 21, TRUE, '2022-09-01', '2025-06-02',
+  ST_SetSRID(ST_MakePoint(-97.7431, 30.2672), 4326)::geography
+),
+(110, 5, 'Goldrej Loft',
+  'Something something.',
+  'East Austin with live music venues, food trucks, and local culture.',
+  'Entire home/apt', 4, 2.0, '2 bathrooms', 2, 3,
+  240.00, 2, 21, TRUE, '2022-09-01', '2025-06-02',
+  ST_SetSRID(ST_MakePoint(-97.7431, 30.2672), 4326)::geography
+),
+(111, 2, 'Greenwood Heights Studio',
   'Bright studio loft steps from local cafés and parks.',
   'Quiet residential block with leafy streets and artisan shops.',
   'Entire home/apt', 2, 1.0, '1 bath', 0, 1,
-  130.00, 1, 30, TRUE, '2025-01-15', '2025-06-12'),
-(112, 4, 'Greenwood Heights Room', 
+  130.00, 1, 30, TRUE, '2025-01-15', '2025-06-12',
+  ST_SetSRID(ST_MakePoint(-73.9950, 40.6500), 4326)::geography
+),
+(112, 4, 'Greenwood Heights Room',
   'Cozy private room in a shared brownstone, close to subway.',
   'Historic neighbourhood with weekend markets and green spaces.',
   'Private room', 1, 0.5, 'Half-bath', 1, 1,
-  75.00, 2, 14, FALSE, '2025-02-10', '2025-06-11'),
-(113, 3, 'Mission District Flat', 
-  'Charming 1‑bed flat with skyline views and street murals.',
+  75.00, 2, 14, FALSE, '2025-02-10', '2025-06-11',
+  ST_SetSRID(ST_MakePoint(-73.9950, 40.6500), 4326)::geography
+),
+(113, 3, 'Mission District Flat',
+  'Charming 1-bed flat with skyline views and street murals.',
   'Vibrant area full of murals, coffee shops, and nightlife.',
   'Entire home/apt', 2, 1.5, '1.5 baths', 1, 1,
-  210.00, 2, 45, TRUE, '2025-03-05', '2025-06-10'),
-(114, 3, 'Mission District Room', 
+  210.00, 2, 45, TRUE, '2025-03-05', '2025-06-10',
+  ST_SetSRID(ST_MakePoint(-122.4148, 37.7599), 4326)::geography
+),
+(114, 3, 'Mission District Room',
   'Sunny private room in a Victorian home, walking distance to parks.',
   'Eclectic neighbourhood with tacos, galleries, and live music.',
   'Private room', 1, 1.0, '1 bath', 1, 1,
-  95.00, 1, 20, TRUE, '2025-04-01', '2025-06-09'),
-(115, 5, 'Mission District Studio', 
+  95.00, 1, 20, TRUE, '2025-04-01', '2025-06-09',
+  ST_SetSRID(ST_MakePoint(-122.4148, 37.7599), 4326)::geography
+),
+(115, 5, 'Mission District Studio',
   'Modern studio with kitchenette and bike storage.',
   'Hip area perfect for cyclists—flat terrain and dedicated lanes.',
   'Entire home/apt', 2, 1.0, '1 bath', 0, 1,
-  185.00, 3, 60, FALSE, '2025-05-12', '2025-06-08');
+  185.00, 3, 60, FALSE, '2025-05-12', '2025-06-08',
+  ST_SetSRID(ST_MakePoint(-122.4148, 37.7599), 4326)::geography
+);
 
 -- NEIGHBOURHOOD table (9 records - one for each listing)
 INSERT INTO Neighbourhood (neighbourhood_id, listing_id, name, neighbourhood_group, latitude, longitude) VALUES
@@ -133,18 +208,18 @@ INSERT INTO Review (listing_id, review_date, rating, accuracy, location, number_
 
 -- AVAILABILITY table (15 records showing different availability patterns)
 INSERT INTO Availability (listing_id, date, availability_30, availability_365) VALUES
-(101, '2025-06-29', 25, 300),
-(101, '2025-07-01', 20, 280),
-(102, '2025-06-20', 30, 365),
-(103, '2025-06-19', 15, 200),
-(103, '2025-08-01', 28, 320),
-(104, '2025-06-25', 10, 150),
-(105, '2025-06-21', 22, 250),
-(105, '2025-07-15', 18, 240),
-(106, '2025-07-14', 29, 350),
-(107, '2025-07-30', 5, 120),
-(107, '2025-07-20', 8, 100),
+(101, '2025-10-29', 25, 300),
+(101, '2025-10-01', 20, 280),
+(102, '2025-10-20', 30, 365),
+(103, '2025-10-19', 15, 200),
+(103, '2025-10-01', 28, 320),
+(104, '2025-10-25', 10, 150),
+(105, '2025-10-21', 22, 250),
+(105, '2025-10-15', 18, 240),
+(106, '2025-09-14', 29, 350),
+(107, '2025-09-30', 5, 120),
+(107, '2025-09-20', 8, 100),
 (108, '2025-10-16', 27, 290),
 (109, '2025-10-22', 21, 260),
-(109, '2025-07-10', 19, 230),
-(109, '2025-08-05', 24, 275);
+(109, '2025-09-10', 19, 230),
+(109, '2025-09-05', 24, 275);
