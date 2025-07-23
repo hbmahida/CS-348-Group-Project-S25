@@ -1,0 +1,41 @@
+ host_id | host_name  | host_since | host_location | is_superhost | host_response_rate | host_acceptance_rate | referred_by | referrer_name 
+---------+------------+------------+---------------+--------------+--------------------+----------------------+-------------+---------------
+       1 | John Smith | 2020-01-15 | New York, NY  | t            |                 95 |                   88 |             |
+
+ listing_id |          name           |    room_type    | accommodates | price  | minimum_nights | instant_bookable |     created_date     | neighbourhood_name | neighbourhood_group |     avg_rating     | review_count | total_reviews | monthly_revenue 
+------------+-------------------------+-----------------+--------------+--------+----------------+------------------+---------------------+--------------------+---------------------+--------------------+--------------+---------------+-----------------
+        103 | Central Park View Room  | Private room    |            1 |  95.00 |              1 | t                | 2020-05-20 00:00:00 | Upper West Side    |                     | 4.4000000000000000 |            2 |             0 |         2850.00
+        102 | Brooklyn Loft Experience | Entire home/apt |            4 | 200.00 |              3 | f                | 2020-03-15 00:00:00 | Williamsburg       |                     | 4.9000000000000000 |            1 |             0 |         6000.00
+        101 | Cozy Manhattan Studio   | Entire home/apt |            2 | 150.00 |              2 | t                | 2020-02-01 00:00:00 | Midtown Manhattan  |                     | 4.6500000000000000 |            2 |             0 |         4500.00
+
+ total_listings | total_daily_revenue | total_monthly_revenue |      avg_price       |     avg_rating     | total_reviews 
+----------------+---------------------+-----------------------+----------------------+--------------------+---------------
+              3 |              445.00 |              13350.00 | 148.3333333333333333 | 4.5000000000000000 |             0
+
+ listing_id |          name           |   amenity   
+------------+-------------------------+-------------
+        101 | Cozy Manhattan Studio   | Air conditioning
+        101 | Cozy Manhattan Studio   | Elevator
+        101 | Cozy Manhattan Studio   | Kitchen
+        101 | Cozy Manhattan Studio   | WiFi
+        102 | Brooklyn Loft Experience | Balcony
+        102 | Brooklyn Loft Experience | Dryer
+        102 | Brooklyn Loft Experience | Washer
+        102 | Brooklyn Loft Experience | WiFi
+        102 | Brooklyn Loft Experience | Workspace
+        103 | Central Park View Room  | Central heating
+        103 | Central Park View Room  | Shared kitchen
+        103 | Central Park View Room  | WiFi
+
+ host_id | host_name     | listing_count | daily_revenue | monthly_revenue 
+---------+---------------+---------------+---------------+-----------------
+       4 | Sarah Johnson |             2 |        780.00 |        23400.00
+       1 | John Smith    |             3 |        445.00 |        13350.00
+       5 | Michael Brown |             3 |        590.00 |        17700.00
+       3 | David Chen    |             3 |        525.00 |        15750.00
+       2 | Maria Garcia  |             3 |        465.00 |        13950.00
+
+ level |           path            
+-------+---------------------------
+     1 | John Smith → Maria Garcia
+(1 row) 

@@ -1,0 +1,6 @@
+current_notification_count
+0
+ 
+notification_id|host_name|notification_type|message|related_listing_name|related_listing_price|neighbourhood|created_at|status
+1|John Smith|NEW_COMPETITION|New listing "Test Trigger Listing" added in Downtown at $125.00/night. Monitor your pricing!|Test Trigger Listing|125.00|Downtown|2024-01-15 14:30:00|Unread
+2|Alice Johnson|LISTING_ADDED|Your listing "Test Trigger Listing" has been successfully added to the system|Test Trigger Listing|125.00|Downtown|2024-01-15 14:30:00|Unread 

@@ -1,10 +1,10 @@
--- HOST table (5 unique hosts)
-INSERT INTO Host (host_id, host_name, host_since, host_location, host_about, host_response_time, host_response_rate, host_acceptance_rate, is_superhost, host_listings_count) VALUES
-(1, 'John Smith', '2020-01-15', 'New York, NY', 'Friendly host with 5 years of experience. Love meeting new people!', 'within an hour', 95, 88, TRUE, 3),
-(2, 'Maria Garcia', '2019-06-20', 'Los Angeles, CA', 'Welcome to my cozy home! I enjoy cooking and sharing local tips.', 'within a few hours', 78, 92, FALSE, 2),
-(3, 'David Chen', '2021-03-10', 'San Francisco, CA', 'Tech professional turned host. Clean, modern spaces available.', 'within an hour', 100, 95, TRUE, 1),
-(4, 'Sarah Johnson', '2018-11-05', 'Miami, FL', 'Beach lover and yoga instructor. Peaceful retreats await you.', 'within a day', 65, 75, FALSE, 2),
-(5, 'Michael Brown', '2022-08-18', 'Austin, TX', 'Music enthusiast with unique properties in the heart of Austin.', 'within a few hours', 89, 84, FALSE, 1);
+-- HOST table (5 unique hosts with referral relationships)
+INSERT INTO Host (host_id, host_name, host_since, host_location, host_about, host_response_time, host_response_rate, host_acceptance_rate, is_superhost, host_listings_count, referred_by) VALUES
+(1, 'John Smith', '2020-01-15', 'New York, NY', 'Friendly host with 5 years of experience. Love meeting new people!', 'within an hour', 95, 88, TRUE, 3, NULL),
+(2, 'Maria Garcia', '2019-06-20', 'Los Angeles, CA', 'Welcome to my cozy home! I enjoy cooking and sharing local tips.', 'within a few hours', 78, 92, FALSE, 2, 1),
+(3, 'David Chen', '2021-03-10', 'San Francisco, CA', 'Tech professional turned host. Clean, modern spaces available.', 'within an hour', 100, 95, TRUE, 1, 1),
+(4, 'Sarah Johnson', '2018-11-05', 'Miami, FL', 'Beach lover and yoga instructor. Peaceful retreats await you.', 'within a day', 65, 75, FALSE, 2, 2),
+(5, 'Michael Brown', '2022-08-18', 'Austin, TX', 'Music enthusiast with unique properties in the heart of Austin.', 'within a few hours', 89, 84, FALSE, 1, 3);
 
 -- LISTING table (9 unique listings)
 INSERT INTO Listing (listing_id, host_id, name, description, neighbourhood_overview, room_type, accommodates, bathrooms, bathrooms_text, bedrooms, beds, price, minimum_nights, maximum_nights, instant_bookable, created_date, last_scraped) VALUES
