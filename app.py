@@ -1,10 +1,17 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
 import psycopg2
 from psycopg2 import errors, IntegrityError
 from db_config import DB_CONFIG
 from datetime import date
 import os
 from data_ingestion import load_production_data_if_needed
+from analytics import (
+    init_analytics_views, get_market_overview, get_host_performance,
+    get_neighbourhood_analytics, get_price_trends, get_top_listings,
+    refresh_analytics_views
+)
+# Import recommendation module (modular - can be easily removed)
+from recommendations import recommendation_engine
 
 app = Flask(__name__)
 # Secret key for session/flash support (set this to a secure random value)
@@ -30,7 +37,6 @@ def init_db():
 # Route for homepage.
 @app.route('/')
 def home():
-    #return render_template('home.html')
     # Fetch top 3 listings per neighbourhood by avg rating DESC, price ASC
     conn = get_db_connection()
     cur = conn.cursor()
@@ -61,7 +67,96 @@ def home():
     ]
     cur.close()
     conn.close()
+    
     return render_template("home.html", top_listings=top_listings)
+
+# Route for standalone analytics dashboard
+@app.route('/analytics')
+def analytics_dashboard():
+    try:
+        market_overview = get_market_overview()
+        host_performance = get_host_performance(limit=15)
+        neighbourhood_analytics = get_neighbourhood_analytics(limit=20)
+        price_trends = get_price_trends()
+        top_performing_listings = get_top_listings(limit=15)
+        
+        analytics_data = {
+            'market_overview': market_overview,
+            'host_performance': host_performance,
+            'neighbourhood_analytics': neighbourhood_analytics,
+            'price_trends': price_trends,
+            'top_performing_listings': top_performing_listings
+        }
+    except Exception as e:
+        print(f"Error fetching analytics data: {e}")
+        analytics_data = {}
+    
+    return render_template("analytics.html", analytics=analytics_data)
+
+# API route for analytics data (for interactive charts)
+@app.route('/api/analytics')
+def api_analytics():
+    try:
+        market_overview = get_market_overview()
+        host_performance = get_host_performance(limit=50)
+        neighbourhood_analytics = get_neighbourhood_analytics(limit=50)
+        price_trends = get_price_trends()
+        top_performing_listings = get_top_listings(limit=50)
+        
+        return jsonify({
+            'market_overview': market_overview,
+            'host_performance': host_performance,
+            'neighbourhood_analytics': neighbourhood_analytics,
+            'price_trends': price_trends,
+            'top_performing_listings': top_performing_listings
+        })
+    except Exception as e:
+        print(f"Error fetching analytics data: {e}")
+        return jsonify({'error': 'Failed to fetch analytics data'}), 500
+
+# API route for host performance data
+@app.route('/api/analytics/host-performance')
+def api_host_performance():
+    try:
+        host_performance = get_host_performance(limit=50)
+        return jsonify(host_performance)
+    except Exception as e:
+        print(f"Error fetching host performance data: {e}")
+        return jsonify({'error': 'Failed to fetch host performance data'}), 500
+
+# API route for price trends data
+@app.route('/api/analytics/price-trends')
+def api_price_trends():
+    try:
+        price_trends = get_price_trends()
+        return jsonify(price_trends)
+    except Exception as e:
+        print(f"Error fetching price trends data: {e}")
+        return jsonify({'error': 'Failed to fetch price trends data'}), 500
+
+# API route for neighbourhood analytics data
+@app.route('/api/analytics/neighbourhood')
+def api_neighbourhood_analytics():
+    try:
+        neighbourhood_analytics = get_neighbourhood_analytics(limit=50)
+        return jsonify(neighbourhood_analytics)
+    except Exception as e:
+        print(f"Error fetching neighbourhood analytics data: {e}")
+        return jsonify({'error': 'Failed to fetch neighbourhood analytics data'}), 500
+
+# Route to manually refresh analytics views
+@app.route('/refresh-analytics')
+def refresh_analytics():
+    try:
+        success = refresh_analytics_views()
+        if success:
+            flash('Analytics data refreshed successfully!', 'success')
+        else:
+            flash('Failed to refresh analytics data.', 'error')
+    except Exception as e:
+        flash(f'Error refreshing analytics: {str(e)}', 'error')
+    
+    return redirect(url_for('home'))
 
 # Route to add sample data to the listings database.
 @app.route('/add-sample')
@@ -429,11 +524,83 @@ def delete_all():
 
     return render_template('delete_all.html')
 
+# ==============================================================================
+# RECOMMENDATION SYSTEM ROUTES (MODULAR - Can be easily removed)
+# ==============================================================================
+
+@app.route('/recommendations')
+def recommendations_page():
+    """Main recommendations page"""
+    return render_template('recommendations.html')
+
+@app.route('/api/recommendations/search')
+def search_listings():
+    """Search for listings to get recommendations"""
+    query = request.args.get('q', '')
+    if not query:
+        return jsonify([])
+    
+    results = recommendation_engine.search_listings(query, limit=20)
+    return jsonify(results)
+
+@app.route('/api/recommendations/<int:listing_id>')
+def get_recommendations(listing_id):
+    """Get recommendations for a specific listing"""
+    max_results = request.args.get('limit', 10, type=int)
+    similarity_threshold = request.args.get('threshold', 0.6, type=float)
+    
+    recommendations = recommendation_engine.get_listing_recommendations(
+        listing_id, max_results, similarity_threshold
+    )
+    
+    return jsonify(recommendations)
+
+@app.route('/api/recommendations/listing/<int:listing_id>')
+def get_listing_details(listing_id):
+    """Get detailed information about a specific listing"""
+    listing = recommendation_engine.get_listing_details_for_comparison(listing_id)
+    
+    if listing:
+        return jsonify(listing)
+    else:
+        return jsonify({'error': 'Listing not found'}), 404
+
+@app.route('/api/recommendations/weights', methods=['POST'])
+def update_similarity_weights():
+    """Update similarity calculation weights"""
+    weights = request.get_json()
+    
+    if not weights:
+        return jsonify({'error': 'No weights provided'}), 400
+    
+    success = recommendation_engine.update_similarity_weights(weights)
+    
+    if success:
+        return jsonify({'message': 'Weights updated successfully'})
+    else:
+        return jsonify({'error': 'Invalid weights. Must sum to 1.0'}), 400
+
+@app.route('/api/recommendations/weights', methods=['GET'])
+def get_similarity_weights():
+    """Get current similarity calculation weights"""
+    return jsonify(recommendation_engine.similarity_weights)
+
+# ==============================================================================
+# END RECOMMENDATION SYSTEM ROUTES
+# ==============================================================================
+
 if __name__ == '__main__':
     # Ensure the schema is created before handling requests
     init_db()
     
     # Load production data if database is empty
     load_production_data_if_needed()
+    
+    # Initialize analytics views
+    try:
+        init_analytics_views()
+        print("Analytics views initialized successfully!")
+    except Exception as e:
+        print(f"Warning: Failed to initialize analytics views: {e}")
     
     app.run(debug=True)
