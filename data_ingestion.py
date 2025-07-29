@@ -11,11 +11,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_db_connection():
-    """Get database connection"""
+    """
+    Get database connection
+    """
     return psycopg2.connect(**DB_CONFIG)
 
 def parse_price(price_str):
-    """Parse price string to float, handling $ and , characters"""
+    """
+    Parse price string to float, handling $ and , characters
+    """
     if pd.isna(price_str) or price_str == '':
         return None
     # Remove $ and , characters, then convert to float
@@ -26,7 +30,9 @@ def parse_price(price_str):
         return None
 
 def parse_boolean(value):
-    """Parse boolean values from CSV"""
+    """
+    Parse boolean values from CSV
+    """
     if pd.isna(value):
         return None
     if isinstance(value, str):
@@ -34,7 +40,9 @@ def parse_boolean(value):
     return bool(value)
 
 def parse_percentage(value):
-    """Parse percentage values, removing % sign"""
+    """
+    Parse percentage values, removing % sign
+    """
     if pd.isna(value) or value == '':
         return None
     if isinstance(value, str) and '%' in value:
@@ -48,7 +56,9 @@ def parse_percentage(value):
         return None
 
 def parse_date(date_str):
-    """Parse date string to date object"""
+    """
+    Parse date string to date object
+    """
     if pd.isna(date_str) or date_str == '':
         return None
     try:
@@ -57,7 +67,9 @@ def parse_date(date_str):
         return None
 
 def parse_amenities(amenities_str):
-    """Parse amenities string to list"""
+    """
+    Parse amenities string to list
+    """
     if pd.isna(amenities_str) or amenities_str == '':
         return []
     
@@ -67,7 +79,9 @@ def parse_amenities(amenities_str):
     return amenities_list
 
 def is_database_empty():
-    """Check if database is empty (no hosts or listings)"""
+    """
+    Check if database is empty (no hosts or listings)
+    """
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -90,7 +104,9 @@ def is_database_empty():
         return False
 
 def load_hosts_from_csv(csv_file_path, conn):
-    """Load hosts from listings CSV file"""
+    """
+    Load hosts from listings CSV file
+    """
     logger.info("Loading hosts from CSV...")
     
     try:
@@ -156,7 +172,9 @@ def load_hosts_from_csv(csv_file_path, conn):
         raise
 
 def load_listings_from_csv(csv_file_path, conn):
-    """Load listings from CSV file"""
+    """
+    Load listings from CSV file
+    """
     logger.info("Loading listings from CSV...")
     
     try:
@@ -294,7 +312,9 @@ def load_listings_from_csv(csv_file_path, conn):
         raise
 
 def load_reviews_from_csv(csv_file_path, conn):
-    """Load reviews from reviews CSV file"""
+    """
+    Load reviews from reviews CSV file
+    """
     logger.info("Loading reviews from CSV...")
     
     try:
@@ -338,7 +358,9 @@ def load_reviews_from_csv(csv_file_path, conn):
         conn.rollback()
 
 def load_production_data_if_needed():
-    """Load production data if database is empty"""
+    """
+    Load production data if database is empty
+    """
     if not is_database_empty():
         logger.info("Database already contains data, skipping production data load")
         return
