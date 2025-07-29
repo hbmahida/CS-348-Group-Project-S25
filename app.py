@@ -408,14 +408,13 @@ def add_listing():
                          neighbourhood_overview, room_type, accommodates,
                          bathrooms, bathrooms_text, bedrooms, beds,
                          price, minimum_nights, maximum_nights,
-                         instant_bookable, created_date, last_scraped)
+                         instant_bookable, created_date, last_scraped, geopoint)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                                %s, %s, %s, %s, %s, %s, %s,
                                ST_SetSRID(
                                ST_MakePoint(%s, %s), 4326
                                )::geography
-                              )
-                    )''',
+                              )''',
                     (listing_id, host_id, name, description,
                      neighbourhood_overview, room_type, accommodates,
                      bathrooms, bathrooms_text, bedrooms, beds,
@@ -581,18 +580,18 @@ def delete_all():
 
     return render_template('delete_all.html')
 
-# ==============================================================================
-# RECOMMENDATION SYSTEM ROUTES (MODULAR - Can be easily removed)
-# ==============================================================================
-
 @app.route('/recommendations')
 def recommendations_page():
-    """Main recommendations page"""
+    """
+    Main recommendations page
+    """
     return render_template('recommendations.html')
 
 @app.route('/api/recommendations/search')
 def search_listings():
-    """Search for listings to get recommendations"""
+    """
+    Search for listings to get recommendations
+    """
     query = request.args.get('q', '')
     if not query:
         return jsonify([])
@@ -602,7 +601,9 @@ def search_listings():
 
 @app.route('/api/recommendations/<int:listing_id>')
 def get_recommendations(listing_id):
-    """Get recommendations for a specific listing"""
+    """
+    Get recommendations for a specific listing
+    """
     max_results = request.args.get('limit', 10, type=int)
     similarity_threshold = request.args.get('threshold', 0.6, type=float)
     
@@ -614,7 +615,9 @@ def get_recommendations(listing_id):
 
 @app.route('/api/recommendations/listing/<int:listing_id>')
 def get_listing_details(listing_id):
-    """Get detailed information about a specific listing"""
+    """
+    Get detailed information about a specific listing
+    """
     listing = recommendation_engine.get_listing_details_for_comparison(listing_id)
     
     if listing:
@@ -624,7 +627,9 @@ def get_listing_details(listing_id):
 
 @app.route('/api/recommendations/weights', methods=['POST'])
 def update_similarity_weights():
-    """Update similarity calculation weights"""
+    """
+    Update similarity calculation weights
+    """
     weights = request.get_json()
     
     if not weights:
@@ -639,12 +644,10 @@ def update_similarity_weights():
 
 @app.route('/api/recommendations/weights', methods=['GET'])
 def get_similarity_weights():
-    """Get current similarity calculation weights"""
+    """
+    Get current similarity calculation weights
+    """
     return jsonify(recommendation_engine.similarity_weights)
-
-# ==============================================================================
-# END RECOMMENDATION SYSTEM ROUTES
-# ==============================================================================
 
 # Route to view host notifications (`Advanced Feature - Trigger-based)
 @app.route('/notifications')
@@ -717,6 +720,7 @@ def view_notifications():
     next_page = min(total_pages, page + 1)
     cur.execute(base_query, params)
     notifications = cur.fetchall()
+
     # Get hosts for filter dropdown
     cur.execute("SELECT host_id, host_name FROM Host ORDER BY host_name")
     hosts = cur.fetchall()
@@ -738,17 +742,18 @@ def view_notifications():
     cur.close()
     conn.close()
     return render_template('notifications.html', 
-                         notifications=formatted_notifications,
-                         hosts=hosts,
-                         current_filters={
-                             'host_id': host_filter,
-                             'notification_type': notification_type,
-                             'status': status_filter
-                         },
-                         page=page,
-                         total_pages=total_pages,
-                         prev_page=prev_page,
-                         next_page=next_page)
+        notifications=formatted_notifications,
+        hosts=hosts,
+        current_filters={
+            'host_id': host_filter,
+            'notification_type': notification_type,
+            'status': status_filter
+        },
+        page=page,
+        total_pages=total_pages,
+        prev_page=prev_page,
+        next_page=next_page
+    )
 
 # Route to mark notification as read
 @app.route('/mark-notification-read', methods=['POST'])
@@ -902,10 +907,11 @@ def referral_network():
     conn.close()
     
     return render_template('referral_network.html', 
-                         network_data=network_data,
-                         network_summary=network_summary,
-                         all_hosts=all_hosts,
-                         selected_host=root_host_id)
+        network_data=network_data,
+        network_summary=network_summary,
+        all_hosts=all_hosts,
+        selected_host=root_host_id
+    )
 
 # Route to add or modify hosts with referral relationships
 @app.route('/add-host-referral', methods=['GET', 'POST'])
@@ -946,9 +952,10 @@ def add_host_referral(host_id=None):
     cur.close()
     conn.close()
     return render_template('add_host_referral.html', 
-                         existing_hosts=existing_hosts, 
-                         current_host=current_host, 
-                         is_editing=host_id is not None)
+        existing_hosts=existing_hosts, 
+        current_host=current_host, 
+        is_editing=host_id is not None
+    )
 
 # Route to view detailed information about a specific host and their listings
 @app.route('/host-details/<int:host_id>')
@@ -1101,10 +1108,11 @@ def host_details(host_id):
     }
     
     return render_template('host_details.html',
-                         host=host_data,
-                         listings=listings_data,
-                         performance=performance_metrics,
-                         network_info=network_info)
+        host=host_data,
+        listings=listings_data,
+        performance=performance_metrics,
+        network_info=network_info
+    )
 
 if __name__ == '__main__':
     # Ensure the schema is created before handling requests

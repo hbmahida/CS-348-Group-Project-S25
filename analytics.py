@@ -8,11 +8,15 @@ from db_config import DB_CONFIG
 from typing import Dict, List, Any
 
 def get_db_connection():
-    """Get database connection"""
+    """
+    Get database connection
+    """
     return psycopg2.connect(**DB_CONFIG)
 
 def init_analytics_views():
-    """Initialize analytics materialized views and triggers"""
+    """
+    Initialize analytics materialized views and triggers
+    """
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -255,7 +259,9 @@ def init_analytics_views():
         conn.close()
 
 def get_market_overview() -> Dict[str, Any]:
-    """Get overall market statistics"""
+    """
+    Get overall market statistics
+    """
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -294,7 +300,9 @@ def get_market_overview() -> Dict[str, Any]:
         conn.close()
 
 def get_host_performance(limit: int = 10) -> List[Dict[str, Any]]:
-    """Get top performing hosts"""
+    """
+    Get top performing hosts
+    """
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -335,7 +343,9 @@ def get_host_performance(limit: int = 10) -> List[Dict[str, Any]]:
         conn.close()
 
 def get_neighbourhood_analytics(limit: int = 15) -> List[Dict[str, Any]]:
-    """Get neighbourhood analytics"""
+    """
+    Get neighbourhood analytics
+    """
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -378,7 +388,9 @@ def get_neighbourhood_analytics(limit: int = 15) -> List[Dict[str, Any]]:
         conn.close()
 
 def get_price_trends() -> List[Dict[str, Any]]:
-    """Get price trends by room type"""
+    """
+    Get price trends by room type
+    """
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -416,7 +428,9 @@ def get_price_trends() -> List[Dict[str, Any]]:
         conn.close()
 
 def get_top_listings(limit: int = 10) -> List[Dict[str, Any]]:
-    """Get top performing listings"""
+    """
+    Get top performing listings
+    """
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -464,7 +478,9 @@ def get_top_listings(limit: int = 10) -> List[Dict[str, Any]]:
         conn.close()
 
 def refresh_analytics_views():
-    """Manually refresh all materialized views"""
+    """
+    Manually refresh all materialized views
+    """
     conn = get_db_connection()
     cur = conn.cursor()
     

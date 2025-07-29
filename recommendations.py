@@ -22,8 +22,7 @@ class RecommendationEngine:
             'rating': 0.1
         }
 
-    def get_listing_recommendations(self, listing_id: int, max_results: int = 10, 
-                                 similarity_threshold: float = 0.6) -> List[Dict]:
+    def get_listing_recommendations(self, listing_id: int, max_results: int = 10, similarity_threshold: float = 0.6) -> List[Dict]:
         """
         Get recommendations for a listing using recursive similarity analysis
         """
@@ -110,9 +109,10 @@ class RecommendationEngine:
         
         return None
 
-    def _execute_recursive_recommendation_query(self, cursor, listing_id: int, 
-                                              max_results: int, threshold: float) -> List[Dict]:
-        """Execute the recursive CTE query for finding similar listings"""
+    def _execute_recursive_recommendation_query(self, cursor, listing_id: int, max_results: int, threshold: float) -> List[Dict]:
+        """
+        Execute the recursive CTE query for finding similar listings
+        """
         
         # First, get the base listing details to use for filtering
         cursor.execute("SELECT room_type, price FROM listing WHERE listing_id = %s", (listing_id,))
@@ -209,8 +209,7 @@ class RecommendationEngine:
         columns = [desc[0] for desc in cursor.description]
         return [dict(zip(columns, row)) for row in results]
 
-    def _calculate_detailed_similarity(self, cursor, base_listing: Dict, 
-                                     candidate_listing: Dict) -> Dict:
+    def _calculate_detailed_similarity(self, cursor, base_listing: Dict, candidate_listing: Dict) -> Dict:
         """Calculate detailed similarity score between two listings"""
         
         # Price similarity (inverse of price difference, normalized)
@@ -256,10 +255,11 @@ class RecommendationEngine:
         }
 
     def _calculate_location_similarity(self, base_listing: Dict, candidate_listing: Dict) -> float:
-        """Calculate similarity based on geographic distance"""
+        """
+        Calculate similarity based on geographic distance
+        """
         try:
-            if not all([base_listing.get('latitude'), base_listing.get('longitude'),
-                       candidate_listing.get('latitude'), candidate_listing.get('longitude')]):
+            if not all([base_listing.get('latitude'), base_listing.get('longitude'), candidate_listing.get('latitude'), candidate_listing.get('longitude')]):
                 return 0.5  # Default similarity if location data is missing
             
             # Haversine formula for distance calculation
@@ -283,7 +283,9 @@ class RecommendationEngine:
             return 0.5
 
     def _calculate_amenity_similarity(self, cursor, listing1_id: int, listing2_id: int) -> float:
-        """Calculate similarity based on shared amenities"""
+        """
+        Calculate similarity based on shared amenities
+        """
         try:
             # Get amenities for both listings
             cursor.execute(
@@ -316,7 +318,9 @@ class RecommendationEngine:
             return 0.5
 
     def _calculate_host_similarity(self, base_listing: Dict, candidate_listing: Dict) -> float:
-        """Calculate similarity based on host characteristics"""
+        """
+        Calculate similarity based on host characteristics
+        """
         try:
             score = 0.0
             
@@ -342,7 +346,9 @@ class RecommendationEngine:
             return 0.5
 
     def _calculate_rating_similarity(self, base_listing: Dict, candidate_listing: Dict) -> float:
-        """Calculate similarity based on ratings"""
+        """
+        Calculate similarity based on ratings
+        """
         try:
             # Convert to float to handle Decimal types from PostgreSQL
             rating1 = float(base_listing.get('avg_rating', 0))
@@ -362,7 +368,9 @@ class RecommendationEngine:
             return 0.5
 
     def update_similarity_weights(self, weights: Dict[str, float]) -> bool:
-        """Update similarity calculation weights"""
+        """
+        Update similarity calculation weights
+        """
         try:
             # Validate weights sum to 1.0
             total = sum(weights.values())
@@ -376,7 +384,9 @@ class RecommendationEngine:
             return False
 
     def get_listing_details_for_comparison(self, listing_id: int) -> Optional[Dict]:
-        """Get detailed listing information for comparison display"""
+        """
+        Get detailed listing information for comparison display
+        """
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -393,7 +403,9 @@ class RecommendationEngine:
             return None
 
     def search_listings(self, query: str, limit: int = 20) -> List[Dict]:
-        """Search listings by name or description"""
+        """
+        Search listings by name or description
+        """
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
