@@ -253,7 +253,11 @@ https://data.insideairbnb.com/canada/on/toronto/2025-05-03/data/listings.csv.gz
 - Users can click "Details" to view individual agent's listings.
 
 ### Trigger based host notification system
-
+- Users can add new listings through the "Add Listing" page
+- When a listing is added, the database automatically triggers notifications
+- Users can view all notifications on the "Host Notifications" page
+- Users can mark notifications as read by clicking the "Mark as Read" button
+- The system shows both "LISTING_ADDED" (confirmation) and "NEW_COMPETITION" (alert) notifications
 
 ### Intelligent recommendation system
 - Click on ‘Recommendations’ in the sidebar.
@@ -261,10 +265,10 @@ https://data.insideairbnb.com/canada/on/toronto/2025-05-03/data/listings.csv.gz
 - Instantly, you’ll see a ranked list of similar listings below.
 - Use sliders to adjust the weight of each criteria:
    - Price
-	- Location
-	- Amenities
-	- Host quality
-	- Rating
+   - Location
+   - Amenities
+   - Host quality
+   - Rating
 
  ### Interactive Data Analytics Dashboard
 - Click on the ‘Analytics Dashboard’ from the sidebar.
