@@ -113,7 +113,16 @@ ALTER TABLE Neighbourhood
 ADD CONSTRAINT valid_latitude CHECK (latitude BETWEEN -90 AND 90),
 ADD CONSTRAINT valid_longitude CHECK (longitude BETWEEN -180 AND 180);
 
--- Indexes and Optimization
+
+-- Indexes for Basic Features
+CREATE UNIQUE INDEX idx_neighbourhood_listing_id ON Neighbourhood(listing_id);
+CREATE INDEX idx_review_listing_id ON Review(listing_id);
+CREATE INDEX idx_listing_room_type ON Listing(room_type);
+CREATE INDEX idx_listing_accommodates ON Listing(accommodates);
+CREATE INDEX idx_host_superhost ON Host(is_superhost);
+CREATE INDEX idx_host_listings_count ON Host(host_listings_count);
+
+-- Indexes and Optimization for Advanced Features
 CREATE INDEX idx_listing_geopoint ON Listing USING GIST (geopoint);
 -- GiST spatial index is created on geopoint column instead of traditional B-tree since B-tree indexes cannot index spatial data but GiST indexes support PostGIS geography type and allows us to perform distance/spatial searches.
 
@@ -150,3 +159,35 @@ CREATE TRIGGER new_listing_notification
     AFTER INSERT ON Listing
     FOR EACH ROW
     EXECUTE FUNCTION notify_neighborhood_hosts();
+
+-- Indexes for Advanced Feature 1: Trigger-Based Host Notification System
+-- These indexes optimize the trigger function queries that join multiple tables
+
+-- Index on Neighbourhood name for fast neighborhood lookups in trigger
+CREATE INDEX idx_neighbourhood_name ON Neighbourhood(name);
+
+-- Index on Listing host_id for fast host-based filtering in trigger
+CREATE INDEX idx_listing_host_id ON Listing(host_id);
+
+-- Index on HostNotifications for efficient notification queries
+CREATE INDEX idx_hostnotifications_host_id ON HostNotifications(host_id);
+CREATE INDEX idx_hostnotifications_created_at ON HostNotifications(created_at);
+CREATE INDEX idx_hostnotifications_type ON HostNotifications(notification_type);
+
+-- Indexes for Feature 2: Recursive Brokerage Firm Network Analysis
+-- These indexes optimize the recursive CTE queries that traverse referral relationships
+
+-- Index on Host referred_by for fast recursive traversal
+CREATE INDEX idx_host_referred_by ON Host(referred_by);
+
+-- Index on Host host_id for fast lookups in recursive queries
+CREATE INDEX idx_host_host_id ON Host(host_id);
+
+-- Composite index on Host for referral network queries
+CREATE INDEX idx_host_referral_network ON Host(referred_by, host_id, host_name);
+
+-- Index on Listing price for fast revenue calculations
+CREATE INDEX idx_listing_price ON Listing(price);
+
+-- Index on Listing host_id for fast host-listing joins
+CREATE INDEX idx_listing_host_id_price ON Listing(host_id, price);
